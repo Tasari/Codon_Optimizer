@@ -9,5 +9,4 @@ def format_codon_bias(codon_bias_table):
                             split_table[place+1][:-1], \
                             codon_to_aminoacid[split_table[place]]))
         place+=3
-    print(codons)
     return codons
