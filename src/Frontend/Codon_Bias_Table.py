@@ -1,4 +1,4 @@
-from tkinter import Frame, Text, Label
+from tkinter import Frame, Text, Label, END
 
 class Codon_bias_entry(Frame):
     def __init__(self, master):
@@ -8,4 +8,6 @@ class Codon_bias_entry(Frame):
         self.text = Text(self, bd=1, height=19, width=80)
         self.text.grid(row=1, column=0)
 
+    def all_data(self):
+        return self.text.get('1.0', END)
         

@@ -1,4 +1,4 @@
-from tkinter import scrolledtext, Frame, Label
+from tkinter import scrolledtext, Frame, Label, END
 
 class Gene_text(Frame):
     def __init__(self, master, label=0):
@@ -9,3 +9,5 @@ class Gene_text(Frame):
         if label:
             self.label.grid(row=0, column=0)
         self.text.grid(row=1, column=0, sticky='w')
+    def all_data(self):
+        return self.text.get('1.0', END)
