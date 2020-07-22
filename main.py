@@ -18,7 +18,7 @@ input_gene.grid(row=1, column=0, sticky='w')
 output_gene.grid(row=1, column=2, sticky='w')
 optimize_button = tk.Button(main_window, text='OPTIMIZE', \
                             height=10, width=30, pady=5, \
-                            command=lambda:optimize(codon_bias_entry.all_data(), input_gene.all_data().replace('T', 'U').replace('\n', ''), output_gene, checklist_board))
+                            command=lambda:optimize(codon_bias_entry.all_data(), input_gene, output_gene, checklist_board))
 optimize_button.grid(row=1, column=1)
 
 col_count, row_count = main_window.grid_size()

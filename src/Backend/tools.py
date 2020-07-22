@@ -31,3 +31,11 @@ def rewrite_codons_to_aminoacids(codons):
         aminoacids.append(codon_to_aminoacid[codon])
     return aminoacids
 
+def get_most_frequent_codons(formatted_codon_bias_table):
+    optimal_codon = {}
+    for codon in formatted_codon_bias_table:
+        if codon.aminoacid not in optimal_codon.keys():
+            optimal_codon[codon.aminoacid] = codon
+        elif optimal_codon[codon.aminoacid].frequencyper1000<codon.frequencyper1000:
+            optimal_codon[codon.aminoacid] = codon
+    return optimal_codon        
