@@ -25,5 +25,5 @@ class Gene_text(Frame):
     def set_CAI(self, CAI):
         self.CAI.config(text='CAI = {}'.format(CAI))
 
-    def set_CGs(self, CG, CG1, CG2, CG3):
-        self.CGs.config(text="CG% = {}% CG1 = {}% CG2 = {}% CG3 = {}%".format(CG, CG1, CG2, CG3))
+    def set_CGs(self, CGstable):
+        self.CGs.config(text="CG% = {:02.2f}% CG1 = {:02.2f}% CG2 = {:02.2f}% CG3 = {:02.2f}%".format(CGstable[0], CGstable[1], CGstable[2], CGstable[3]))
