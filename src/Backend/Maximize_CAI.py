@@ -5,7 +5,6 @@ def get_most_frequent_codons(formatted_gene_bias_table):
             optimal_codon[codon.aminoacid] = codon
         elif optimal_codon[codon.aminoacid].frequencyper1000<codon.frequencyper1000:
             optimal_codon[codon.aminoacid] = codon
-    print(optimal_codon)
     return optimal_codon        
 
 def maximize_CAI(input_aa_sequence, formatted_gene_bias_table):

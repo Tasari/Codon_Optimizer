@@ -6,7 +6,7 @@ class checklist_board(Frame):
         self.label= Label(self, text='Options', font=('Arial', 16))
         self.label.grid(row=0, column=0)
         self.checklist_board = Frame(self)
-        self.CAI_check = IntVar()
+        self.CAI_maximize_check = IntVar()
         self.Harmonization_check = IntVar()
         self.CG_balancing_check = IntVar()
         self.Hidden_STOP_check = IntVar()
@@ -18,8 +18,8 @@ class checklist_board(Frame):
         self.Include_sequence_entry = Entry(self.checklist_board, bd=1, state='disabled')
         self.Forbid_sequence_entry = Entry(self.checklist_board, bd=1, state='disabled')
 
-        self.CAI_checkbutton = Checkbutton(self.checklist_board, text = "Maximize CAI",\
-                                            variable = self.CAI_check, )
+        self.CAI_checkbutton = Checkbutton(self.checklist_board, onvalue = 1, offvalue = 0, text = "Maximize CAI",\
+                                            variable = self.CAI_maximize_check )
 
         self.Harmonization_checkbutton = Checkbutton(self.checklist_board, text = "Harmonize sequence", \
                                             variable = self.Harmonization_check)
