@@ -39,3 +39,14 @@ def get_most_frequent_codons(formatted_codon_bias_table):
         elif optimal_codon[codon.aminoacid].frequencyper1000<codon.frequencyper1000:
             optimal_codon[codon.aminoacid] = codon
     return optimal_codon        
+
+def get_second_most_frequent_codons(formatted_codon_bias_table):
+    new_table = formatted_codon_bias_table[:]
+    best = get_most_frequent_codons(formatted_codon_bias_table).items()
+    for key, value in best: 
+            new_table.remove(value)
+    second_most_frequent = get_most_frequent_codons(new_table)
+    for key, value in best:
+        if key not in second_most_frequent.keys():
+            second_most_frequent[key] = value
+    return second_most_frequent

@@ -29,5 +29,4 @@ def create_codon_bias_supersequence(formatted_codon_bias_table):
     superstring = ''
     for codon in formatted_codon_bias_table:
         superstring += codon.bases*codon.amount
-    print(superstring)
     return superstring

@@ -1,4 +1,4 @@
-from tkinter import Checkbutton, IntVar, Frame, Entry, Label
+from tkinter import Checkbutton, IntVar, Frame, Entry, Label, END
 
 class checklist_board(Frame):
     def __init__(self, master):
@@ -76,3 +76,5 @@ class checklist_board(Frame):
         else:
             entry.configure(state='normal')
 
+    def get_forbidden(self):
+        return self.Forbid_sequence_entry.get()
