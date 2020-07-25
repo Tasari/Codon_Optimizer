@@ -31,22 +31,30 @@ def rewrite_codons_to_aminoacids(codons):
         aminoacids.append(codon_to_aminoacid[codon])
     return aminoacids
 
-def get_most_frequent_codons(formatted_codon_bias_table):
+def get_most_frequent_codons(formatted_codon_bias_table, n=1):
     optimal_codon = {}
-    for codon in formatted_codon_bias_table:
+    if n != 1:
+        final_table = get_limited_table(formatted_codon_bias_table, n)
+    else:
+        final_table = formatted_codon_bias_table
+    for codon in final_table:
         if codon.aminoacid not in optimal_codon.keys():
             optimal_codon[codon.aminoacid] = codon
         elif optimal_codon[codon.aminoacid].frequencyper1000<codon.frequencyper1000:
             optimal_codon[codon.aminoacid] = codon
     return optimal_codon        
 
-def get_second_most_frequent_codons(formatted_codon_bias_table):
-    new_table = formatted_codon_bias_table[:]
-    best = get_most_frequent_codons(formatted_codon_bias_table).items()
-    for key, value in best: 
-            new_table.remove(value)
-    second_most_frequent = get_most_frequent_codons(new_table)
-    for key, value in best:
-        if key not in second_most_frequent.keys():
-            second_most_frequent[key] = value
-    return second_most_frequent
+def get_limited_table(formatted_codon_bias_table, n):
+    all_codons = formatted_codon_bias_table[:]
+    backup = all_codons[:]
+
+    for i in range(n-1):
+        for value in get_most_frequent_codons(all_codons).values():
+            all_codons.remove(value)
+    all_aminoacids = [codon.aminoacid for codon in all_codons]
+    
+    for codon in backup:
+        if codon.aminoacid not in all_aminoacids:
+            all_codons.append(codon)
+    return get_most_frequent_codons(all_codons).values()
+

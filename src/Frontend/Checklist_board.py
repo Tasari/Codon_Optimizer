@@ -77,4 +77,4 @@ class checklist_board(Frame):
             entry.configure(state='normal')
 
     def get_forbidden(self):
-        return self.Forbid_sequence_entry.get()
+        return self.Forbid_sequence_entry.get().split(", ")
