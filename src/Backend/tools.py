@@ -1,4 +1,6 @@
 from .data import codon_to_aminoacid
+import re
+
 def rewrite_sequence_to_protein(sequence):
     return rewrite_codons_to_protein(rewrite_sequence_to_codons(sequence))
 
@@ -58,3 +60,12 @@ def get_limited_table(formatted_codon_bias_table, n):
             all_codons.append(codon)
     return get_most_frequent_codons(all_codons).values()
 
+def find_sequence_in_gene(sequence, gene):
+    found_indexes = [found.start() for found in re.finditer(re.compile(sequence.replace('T', 'U')), gene)]
+    return found_indexes
+
+def reformat_table_codon_freq_aa(formatted_codon_bias):
+    codon_freq = {}
+    for codon in formatted_codon_bias:
+        codon_freq[codon.bases] = (codon.frequencyper1000, codon.aminoacid)
+    return codon_freq

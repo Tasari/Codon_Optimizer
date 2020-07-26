@@ -8,10 +8,8 @@ class checklist_board(Frame):
         self.checklist_board = Frame(self)
         self.CAI_maximize_check = IntVar()
         self.Harmonization_check = IntVar()
-        self.CG_balancing_check = IntVar()
         self.Hidden_STOP_check = IntVar()
         self.Repeat_remove_check = IntVar()
-        self.Cis_acting_check = IntVar()
         self.Favored_sequences_check = IntVar()
         self.Forbidden_sequences_check = IntVar()
         self.Hidden_codons_entry = Entry(self.checklist_board, bd=1, state='disabled')
@@ -21,11 +19,8 @@ class checklist_board(Frame):
         self.CAI_checkbutton = Checkbutton(self.checklist_board, onvalue = 1, offvalue = 0, text = "Maximize CAI",\
                                             variable = self.CAI_maximize_check )
 
-        self.Harmonization_checkbutton = Checkbutton(self.checklist_board, text = "Harmonize sequence", \
+        self.Harmonization_checkbutton = Checkbutton(self.checklist_board, text = "Harmonize sequence \n and balance CG", \
                                             variable = self.Harmonization_check)
-
-        self.CG_balancing_checkbutton = Checkbutton(self.checklist_board, text = "Balance CG", \
-                                            variable = self.CG_balancing_check)
 
         self.Hidden_STOP_checkbutton = Checkbutton(self.checklist_board, text = "Erase hidden codons", \
                                             variable = self.Hidden_STOP_check, \
@@ -34,9 +29,6 @@ class checklist_board(Frame):
 
         self.Repeat_remove_checkbutton = Checkbutton(self.checklist_board, text = "Remove repeating bases", \
                                             variable = self.Repeat_remove_check)
-
-        self.Cis_acting_checkbutton = Checkbutton(self.checklist_board, text = "Find cis-acting sequences", \
-                                            variable = self.Cis_acting_check)
 
         self.Favored_sequences_checkbutton = Checkbutton(self.checklist_board, text = "Include sequence", \
                                             variable = self.Favored_sequences_check, \
@@ -51,11 +43,9 @@ class checklist_board(Frame):
 
         self.CAI_checkbutton.grid(row=0, column=0, sticky='w')
         self.Harmonization_checkbutton.grid(row=1, column=0, sticky='w')
-        self.CG_balancing_checkbutton.grid(row=2, column=0, sticky='w')
         self.Hidden_STOP_checkbutton.grid(row=0, column=1, sticky='w')
         self.Hidden_codons_entry.grid(row=0, column=1, sticky='s')
-        self.Repeat_remove_checkbutton.grid(row=2, column=1, sticky='w')
-        self.Cis_acting_checkbutton.grid(row=1, column=1, sticky='w')
+        self.Repeat_remove_checkbutton.grid(row=1, column=1, sticky='w')
         self.Favored_sequences_checkbutton.grid(row=0, column=2, sticky='w')
         self.Include_sequence_entry.grid(row=0, column=2, sticky='s')
         self.Forbidden_sequences_checkbutton.grid(row=1, column=2, sticky='w')
@@ -77,4 +67,10 @@ class checklist_board(Frame):
             entry.configure(state='normal')
 
     def get_forbidden(self):
-        return self.Forbid_sequence_entry.get().split(", ")
+        return self.Forbid_sequence_entry.get().replace('T', 'U').split(", ")
+
+    def get_favored(self):
+        return self.Include_sequence_entry.get().replace('T', 'U').split(', ')
+
+    def get_hidden(self):
+        return self.Hidden_codons_entry.get().replace('T', 'U').split(', ')
