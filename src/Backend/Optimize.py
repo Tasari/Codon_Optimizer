@@ -9,8 +9,9 @@ from .Include_sequence import include_sequence
 from .remove_hidden_codons import add_hidden_codons_to_forbidden
 from .Repetitive_bases_remover import add_repetitive_bases_to_forbidden
 from .tools import limit_codon_bias_by_eliminating_rare_codons
+from ..logs import errors, failed_forbidding
 
-def optimize(codon_bias, input_gene, output_gene, checklist_board):
+def optimize(codon_bias, input_gene, output_gene, checklist_board, logs):
     formatted_codon_bias = format_codon_bias(codon_bias.all_data())
     final_sequence = input_gene.all_data().replace('T', 'U').replace('\n', '')
     all_forbidden_sequences = []
@@ -26,7 +27,7 @@ def optimize(codon_bias, input_gene, output_gene, checklist_board):
     if checklist_board.Forbidden_sequences_check.get():
         all_forbidden_sequences = add_forbid_sequences_to_all(all_forbidden_sequences, checklist_board.get_forbidden())
     if all_forbidden_sequences != []:
-        final_sequence = forbid_sequences(all_forbidden_sequences, final_sequence, limit_codon_bias_by_eliminating_rare_codons(formatted_codon_bias))
+        final_sequence = forbid_sequences(all_forbidden_sequences, final_sequence, formatted_codon_bias)
     if checklist_board.Favored_sequences_check.get():
         final_sequence = include_sequence(checklist_board.get_favored(), final_sequence, formatted_codon_bias)
     output_gene.set_data(final_sequence.replace('U', 'T'))
@@ -35,3 +36,6 @@ def optimize(codon_bias, input_gene, output_gene, checklist_board):
     input_gene.set_CGs(calculateCGs(input_gene.all_data()))
     output_gene.set_CGs(calculateCGs(output_gene.all_data()))
     codon_bias.set_CGs(calculateCGs(create_codon_bias_supersequence(formatted_codon_bias)))
+    logs.add_errors(errors)
+    errors.clear()
+    failed_forbidding.clear()

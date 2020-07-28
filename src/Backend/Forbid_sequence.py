@@ -17,14 +17,14 @@ def add_forbid_sequences_to_all(all_forbidden_sequences, new_forbidden):
 
 def get_sequence_from_occurance_places(input_gene, occurance, lenght):
     if occurance%3 == 0:
-        start = occurance-lenght
+        start = occurance-3
     elif occurance%3 == 1:
-        start = occurance-1-lenght
+        start = occurance-1-3
     else:
-        start = occurance-2-lenght
+        start = occurance-2-3
     if start < 0:
         start=0
-    end = start+lenght+lenght+lenght+lenght
+    end = start+lenght+6
     if end > len(input_gene):
         end = len(input_gene) 
     return (start, end)
@@ -47,13 +47,13 @@ def get_codons_based_on_aminoacid(aminoacids, formatted_codon_bias_table):
         sequence.append(list_of_coding_codons)
     return sequence
 
-def change_sequence_to_eliminate_occurance(input_string, done_sequences, formatted_codon_bias_table, post=''):
+def change_sequence_to_eliminate_occurance(input_string, done_sequences, formatted_codon_bias_table, pre='',post=''):
     aminoacids = rewrite_sequence_to_aminoacids(input_string)
     possible_codons_list = get_codons_based_on_aminoacid(aminoacids, formatted_codon_bias_table)
     all_possibilities = [rewrite_codons_to_sequence(x) for x in product(*possible_codons_list)]
     good_possibilities = []
     for possibility in all_possibilities:
-        if not check_if_sequences_in_forbidden(possibility+post, done_sequences):
+        if not check_if_sequences_in_forbidden(pre+possibility+post, done_sequences):
             good_possibilities.append(possibility)
     if not len(good_possibilities):
         print('fail', input_string)
@@ -69,6 +69,7 @@ def eliminate_occurances_of_sequence(sequence, final_sequence, done_sequences, l
     all_occurances_of_sequence = find_sequence_in_gene(sequence, final_sequence)
     begin = 0
     new_sequence = ''
+    failed = 0
     for occurance in all_occurances_of_sequence:
         sequence_range = get_sequence_from_occurance_places(final_sequence, occurance, lenght)
         if begin > sequence_range[0]:
@@ -76,16 +77,18 @@ def eliminate_occurances_of_sequence(sequence, final_sequence, done_sequences, l
             new_sequence = new_sequence[:begin] 
         new_sequence += final_sequence[begin:sequence_range[0]]
         to_append, failed = change_sequence_to_eliminate_occurance(final_sequence[sequence_range[0]:sequence_range[1]],\
-                                                                 done_sequences, formatted_codon_bias_table, final_sequence[sequence_range[1]:sequence_range[1]+2])
+                                                                 done_sequences, formatted_codon_bias_table, final_sequence[sequence_range[0]-2:sequence_range[0]], final_sequence[sequence_range[1]:sequence_range[1]+2])
         new_sequence += to_append
         begin = sequence_range[1]
+        if failed and sequence not in failed_forbidding:
+            failed_forbidding.append(sequence.replace('U', 'T'))
+
     new_sequence += final_sequence[begin:]
     if all_occurances_of_sequence != []:
         final_sequence = new_sequence
     if find_sequence_in_gene(sequence, final_sequence) != [] and not failed:
         return final_sequence, 1
-    if failed:
-        failed_forbidding.append(sequence)
+
     return final_sequence, 0
 
 def forbid_sequences(all_forbidden_sequences, input_string, formatted_codon_bias_table):
@@ -94,11 +97,11 @@ def forbid_sequences(all_forbidden_sequences, input_string, formatted_codon_bias
     if all_forbidden_sequences != []:
         all_forbidden_sequences = list(dict.fromkeys(sorted(all_forbidden_sequences, key=len)))
         still_found=1
-    lenght = get_valid_sequence_lenght(all_forbidden_sequences[len(all_forbidden_sequences)-1])
     while still_found:
         done_sequences = [] 
         for sequence in all_forbidden_sequences:
+            lenght = get_valid_sequence_lenght(all_forbidden_sequences[len(all_forbidden_sequences)-1])
             done_sequences.append(sequence)
             final_sequence, still_found = eliminate_occurances_of_sequence(sequence, final_sequence, done_sequences, lenght, formatted_codon_bias_table)
-    errors.append("Failed to eliminate sequeces: " + failed_forbidding)
+    errors.append("Failed to eliminate sequeces: {}".format(failed_forbidding))
     return final_sequence

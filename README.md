@@ -8,15 +8,14 @@ Genetic optimizer is tool for gene optimalization
 - Harmonization and CG AT balancing
 - Hidden codons avoiding
 - Repeating base remove
-- Avoiding sequence(Bit laggy)
+- Avoiding sequence(Can be slow with bigger sequences)
 - Including sequence
 
 ## TODO ##
 
-- Speeding up the avoiding process
 - Bugcatching
-- Logs tab
 - Tests
+- Refactoring
 
 ### Optional ###
 
@@ -26,23 +25,50 @@ Genetic optimizer is tool for gene optimalization
 
 ## Installation ##
 
+- Unpack repository
+- Run main.py using python
+
 ### Prerequisites ###
 
 - Python 3.7
 
-### Usage ###
+## Usage ##
 
-- Unpack repository
-- Run main.py using python
 - Put codon bias table into Codon Bias Table entry (CTRL+V)
 - Put starting gene into Input Gene (CTRL+V)
 - Check options which you would like to use
 - Click OPTIMIZE
 - Copy the Output Sequence (CTRL+A, CTRL+C)
 
+### Detailed function info ###
+
+- CAI maximalization - Maximizes the CAI of sequence
+- Harmonization and CG balance - Balancing CG while harmonizing the sequence (Planning user set spread)
+- Erase hidden codons - Tries to remove given hidden codons, multiple codons are set using ", ", e.g. "UUG, TTC"
+- Remove repeating bases - Tries to remove sequences like "CCCCC" (Planning user set lenght of sequence)
+- Forbid sequence - Tries to avoid given sequences, e.g. "GAAG, CAAAACTAG"
+- Include sequence - Tries to put given sequence somewhere into output, supports only 1 sequence at once(Planning multiple sequences)
+
 ## Changelog ##
 
-Version 1.0.0 (Recent):
+Version 1.1.0 (Recent):
+
+- New:
+
+    1. Logs window (Shows erase errors)
+    2. Quite fast forbid sequence
+
+- Updated:
+
+    1. Remade forbid sequence to be faster
+
+- Known Bugs:
+
+    1. Forbid Sequence destroys CG balance
+    2. Codon Bias table with too many CDS's crashes the program
+    3. Enabling some functions and passing empty arguments crashes the optimizing without logs error
+
+Version 1.0.0:
 
 - New:
 
