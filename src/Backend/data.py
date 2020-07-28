@@ -15,3 +15,5 @@ codon_to_aminoacid = {
         'UUC':'F', 'UUU':'F', 'UUA':'L', 'UUG':'L', 
         'UAC':'Y', 'UAU':'Y', 'UAA':'_', 'UAG':'_', 
         'UGC':'C', 'UGU':'C', 'UGA':'_', 'UGG':'W'}
+
+all_aminoacids = ['I', 'M', 'T', 'N', 'K', 'S', 'R', 'L', 'P', 'H', 'Q', 'R', 'V', 'A', 'D', 'E', 'G', 'S', 'F', 'L', 'Y', '_', 'C', 'W']

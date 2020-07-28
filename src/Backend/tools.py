@@ -1,5 +1,6 @@
-from .data import codon_to_aminoacid
+from .data import codon_to_aminoacid, all_aminoacids
 import re
+from Calculate_CG import calculateCGs
 
 def rewrite_sequence_to_protein(sequence):
     return rewrite_codons_to_protein(rewrite_sequence_to_codons(sequence))
@@ -69,3 +70,18 @@ def reformat_table_codon_freq_aa(formatted_codon_bias):
     for codon in formatted_codon_bias:
         codon_freq[codon.bases] = (codon.frequencyper1000, codon.aminoacid)
     return codon_freq
+
+def limit_codon_bias_by_eliminating_rare_codons(formatted_codon_bias):
+    all_aminoacids.sort()
+    limited_codon_bias = []
+    for codon in formatted_codon_bias:
+        if codon.frequencyper1000>10:
+            limited_codon_bias.append(codon)
+        elif codon.frequencyper1000<10 and any(x.aminoacid == codon.aminoacid for x in limited_codon_bias):
+            for x in limited_codon_bias:
+                if x.aminoacid == codon.aminoacid and x.frequencyper1000 < codon.frequencyper1000:
+                    limited_codon_bias.remove(x)
+                    limited_codon_bias.append(codon)
+        else:
+            limited_codon_bias.append(codon)
+    return limited_codon_bias
