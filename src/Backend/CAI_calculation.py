@@ -6,7 +6,7 @@ def geomean(xs):
 
 def calculate_CAI(data, formatted_codon_bias_table, alldata=1):
     if alldata:
-        sequence = data.all_data().replace("T", 'U').replace('\n', '')
+        sequence = data.all_data().replace("T", 'U').replace('\n', '').upper()
     else:
         sequence=data
     to_count=[]
@@ -21,16 +21,3 @@ def calculate_CAI(data, formatted_codon_bias_table, alldata=1):
     if alldata:
         data.set_CAI(result)
     return result 
-    '''
-    for codon in formatted_codon_bias_table:
-        if codon.bases not in dicto_testo.keys():
-            dicto_testo[codon.bases] = codon
-    for codon in rewrite_sequence_to_codons(sequence):
-        if codon in forbidden:
-            continue
-        if dicto_testo[codon].amount != 0:
-            w = dicto_testo[codon].amount/most_frequent_codons[dicto_testo[codon].aminoacid].amount
-        else:
-            w = 0.5/most_frequent_codons[dicto_testo[codon].aminoacid].amount
-        to_count.append(w)
-'''

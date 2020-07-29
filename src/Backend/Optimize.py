@@ -20,7 +20,6 @@ def optimize(codon_bias, input_gene, output_gene, checklist_board, logs):
         except AssertionError:
             errors.append("Input Sequence is not dividable by 3")
         try:
-            print(len(formatted_codon_bias))
             assert(len(formatted_codon_bias)==64)
         except AssertionError:
             errors.append("Not enough codons in table")

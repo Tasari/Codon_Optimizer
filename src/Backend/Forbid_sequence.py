@@ -24,7 +24,7 @@ def get_sequence_from_occurance_places(input_gene, occurance, lenght):
         start = occurance-2-3
     if start < 0:
         start=0
-    end = start+lenght+6
+    end = start+lenght+3
     if end > len(input_gene):
         end = len(input_gene) 
     return (start, end)
@@ -56,7 +56,6 @@ def change_sequence_to_eliminate_occurance(input_string, done_sequences, formatt
         if not check_if_sequences_in_forbidden(pre+possibility+post, done_sequences):
             good_possibilities.append(possibility)
     if not len(good_possibilities):
-        print('fail', input_string)
         return input_string, 1
     best = (0, '')
     for possibility in good_possibilities:
@@ -77,11 +76,11 @@ def eliminate_occurances_of_sequence(sequence, final_sequence, done_sequences, l
             new_sequence = new_sequence[:begin] 
         new_sequence += final_sequence[begin:sequence_range[0]]
         to_append, failed = change_sequence_to_eliminate_occurance(final_sequence[sequence_range[0]:sequence_range[1]],\
-                                                                 done_sequences, formatted_codon_bias_table, final_sequence[sequence_range[0]-2:sequence_range[0]], final_sequence[sequence_range[1]:sequence_range[1]+2])
+                                                                 done_sequences, formatted_codon_bias_table, new_sequence[sequence_range[0]-2:sequence_range[0]], final_sequence[sequence_range[1]:sequence_range[1]+2])
         new_sequence += to_append
         begin = sequence_range[1]
         if failed and sequence not in failed_forbidding:
-            failed_forbidding.append(sequence.replace('U', 'T'))
+            failed_forbidding.append(sequence)
 
     new_sequence += final_sequence[begin:]
     if all_occurances_of_sequence != []:
