@@ -40,7 +40,7 @@ def create_formatted_codon_bias_from_sequence(sequence):
     for codon in (rewrite_sequence_to_codons(whitelisted_sequence)):
         codon_counts[codon] += 1
     for key, value in codon_counts.items():
-        codons.append(Codon(key, round(float(value/1000), 1), value, codon_to_aminoacid[key]))
+        codons.append(Codon(key, round(float(value*(len(rewrite_sequence_to_codons(whitelisted_sequence))/1000)), 1), value, codon_to_aminoacid[key]))
     codons = set_rare_codons(codons)
     return codons
 
