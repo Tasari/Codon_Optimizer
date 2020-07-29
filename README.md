@@ -51,7 +51,14 @@ Genetic optimizer is tool for gene optimalization
 
 ## Changelog ##
 
-Version 1.2.0 (Recent):
+Version 1.2.1:
+
+- Updated:
+    1. Eliminated bug with CAI calculation using representative sequence
+- Known Bugs:
+    1. Forbid sequence is not taking CG balance into account
+
+Version 1.2.0:
 
 - New:
     1. Enabled using sequences instead of table
