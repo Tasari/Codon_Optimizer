@@ -51,7 +51,15 @@ Genetic optimizer is tool for gene optimalization
 
 ## Changelog ##
 
-Version 1.1.1 (Recent):
+Version 1.2.0 (Recent):
+
+- New:
+    1. Enabled using sequences instead of table
+
+- Known Bugs:
+    1. Forbid sequence is not taking CG balance into account
+
+Version 1.1.1:
 
 - Updated:
     1. Eliminated too big codon bias table problem

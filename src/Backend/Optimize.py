@@ -1,4 +1,4 @@
-from .Format_Codon_Bias import format_codon_bias
+from .Format_Codon_Bias import format_codon_bias, create_formatted_codon_bias_from_sequence
 from .Maximize_CAI import maximize_CAI
 from .tools import rewrite_sequence_to_aminoacids
 from .CAI_calculation import calculate_CAI
@@ -13,8 +13,11 @@ from ..logs import errors, failed_forbidding
 
 def optimize(codon_bias, input_gene, output_gene, checklist_board, logs):
     try:
-        codon_bias.check_table_valid()
-        formatted_codon_bias = format_codon_bias(codon_bias.all_data())
+        if not codon_bias.var.get():
+            codon_bias.check_table_valid()
+            formatted_codon_bias = format_codon_bias(codon_bias.all_data())
+        else:
+            formatted_codon_bias = create_formatted_codon_bias_from_sequence(codon_bias.all_data())
         final_sequence = input_gene.all_data().replace('T', 'U').replace('\n', '').upper()
         try:
             assert(len(final_sequence)%3==0)

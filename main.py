@@ -31,5 +31,4 @@ for col in range(col_count):
 
 for row in range(row_count):
     main_window.grid_rowconfigure(row, minsize=200)
-
 main_window.mainloop()
