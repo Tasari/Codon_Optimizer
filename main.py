@@ -8,6 +8,7 @@ from src.Backend.Optimize import optimize
 main_window = tk.Tk()
 
 main_window.iconbitmap('icon.ico')
+main_window.title("Genetic Optimizer")
 
 checklist_board = checklist_board(main_window)
 checklist_board.grid(row=0, column=0, sticky='e')
