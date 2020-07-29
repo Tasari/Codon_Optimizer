@@ -13,7 +13,7 @@ def format_codon_bias(codon_bias_table):
     codons = set_rare_codons(codons)
     return codons
 
-def set_rare_codons(formatted_codon_bias, minimal_frequency=0.1):
+def set_rare_codons(formatted_codon_bias, minimal_frequency=0.5):
     for codon in formatted_codon_bias:
         if codon.frequencyper1000 < minimal_frequency:
             codon.frequencyper1000 = minimal_frequency

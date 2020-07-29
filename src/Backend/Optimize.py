@@ -13,29 +13,42 @@ from ..logs import errors, failed_forbidding
 
 def optimize(codon_bias, input_gene, output_gene, checklist_board, logs):
     formatted_codon_bias = format_codon_bias(codon_bias.all_data())
-    final_sequence = input_gene.all_data().replace('T', 'U').replace('\n', '')
-    all_forbidden_sequences = []
-    if checklist_board.CAI_maximize_check.get():
-        final_sequence = maximize_CAI(rewrite_sequence_to_aminoacids(final_sequence), \
-                                      formatted_codon_bias)
-    if checklist_board.Harmonization_check.get():
-        final_sequence = Harmonize(final_sequence, formatted_codon_bias, 5)
-    if checklist_board.Hidden_STOP_check.get():
-        all_forbidden_sequences = add_hidden_codons_to_forbidden(all_forbidden_sequences, checklist_board.get_hidden())
-    if checklist_board.Repeat_remove_check.get():
-        all_forbidden_sequences = add_repetitive_bases_to_forbidden(all_forbidden_sequences)
-    if checklist_board.Forbidden_sequences_check.get():
-        all_forbidden_sequences = add_forbid_sequences_to_all(all_forbidden_sequences, checklist_board.get_forbidden())
-    if all_forbidden_sequences != []:
-        final_sequence = forbid_sequences(all_forbidden_sequences, final_sequence, formatted_codon_bias)
-    if checklist_board.Favored_sequences_check.get():
-        final_sequence = include_sequence(checklist_board.get_favored(), final_sequence, formatted_codon_bias)
-    output_gene.set_data(final_sequence.replace('U', 'T'))
-    calculate_CAI(input_gene, formatted_codon_bias)
-    calculate_CAI(output_gene, formatted_codon_bias)
-    input_gene.set_CGs(calculateCGs(input_gene.all_data()))
-    output_gene.set_CGs(calculateCGs(output_gene.all_data()))
-    codon_bias.set_CGs(calculateCGs(create_codon_bias_supersequence(formatted_codon_bias)))
-    logs.add_errors(errors)
-    errors.clear()
-    failed_forbidding.clear()
+    final_sequence = input_gene.all_data().replace('T', 'U').replace('\n', '').upper()
+    try:
+        try:
+            assert(len(final_sequence)%3==0)
+        except AssertionError:
+            errors.append("Input Sequence is not dividable by 3")
+        try:
+            print(len(formatted_codon_bias))
+            assert(len(formatted_codon_bias)==64)
+        except AssertionError:
+            errors.append("Not enough codons in table")
+        all_forbidden_sequences = []
+        if checklist_board.CAI_maximize_check.get():
+            final_sequence = maximize_CAI(rewrite_sequence_to_aminoacids(final_sequence), \
+                                        formatted_codon_bias)
+        if checklist_board.Harmonization_check.get():
+            final_sequence = Harmonize(final_sequence, formatted_codon_bias, 5)
+        if checklist_board.Hidden_STOP_check.get():
+            all_forbidden_sequences = add_hidden_codons_to_forbidden(all_forbidden_sequences, checklist_board.get_hidden())
+        if checklist_board.Repeat_remove_check.get():
+            all_forbidden_sequences = add_repetitive_bases_to_forbidden(all_forbidden_sequences)
+        if checklist_board.Forbidden_sequences_check.get():
+            all_forbidden_sequences = add_forbid_sequences_to_all(all_forbidden_sequences, checklist_board.get_forbidden())
+        if all_forbidden_sequences != []:
+            final_sequence = forbid_sequences(all_forbidden_sequences, final_sequence, formatted_codon_bias)
+        if checklist_board.Favored_sequences_check.get():
+            final_sequence = include_sequence(checklist_board.get_favored(), final_sequence, formatted_codon_bias)
+        output_gene.set_data(final_sequence.replace('U', 'T'))
+        calculate_CAI(input_gene, formatted_codon_bias)
+        calculate_CAI(output_gene, formatted_codon_bias)
+        input_gene.set_CGs(calculateCGs(input_gene.all_data()))
+        output_gene.set_CGs(calculateCGs(output_gene.all_data()))
+        codon_bias.set_CGs(calculateCGs(create_codon_bias_supersequence(formatted_codon_bias)))
+    except:
+        pass
+    finally:
+        logs.add_errors(errors)
+        errors.clear()
+        failed_forbidding.clear()
