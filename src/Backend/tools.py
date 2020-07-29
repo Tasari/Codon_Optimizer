@@ -1,6 +1,6 @@
 from .data import codon_to_aminoacid, all_aminoacids
 import re
-from Calculate_CG import calculateCGs
+from .Calculate_CG import calculateCGs
 
 def rewrite_sequence_to_protein(sequence):
     return rewrite_codons_to_protein(rewrite_sequence_to_codons(sequence))

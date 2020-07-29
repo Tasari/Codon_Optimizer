@@ -1,15 +1,26 @@
 from .Codon import Codon
 from .data import codon_to_aminoacid
 def format_codon_bias(codon_bias_table):
-    split_table=codon_bias_table.split()
     codons = []
-    place = 0
-    for i in range(int(len(split_table)/3)):
-        codons.append(Codon(split_table[place], \
-                            split_table[place+1][:-1], \
-                            split_table[place+2][:-1], \
-                            codon_to_aminoacid[split_table[place]]))
-        place+=3
+    codon = ''
+    frequencyper1000 = ''
+    amount = ''
+    mode = 'freq'
+    for char in codon_bias_table:
+        if char in ['A', 'C', 'G', 'U']:
+            codon+=char
+        elif char in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'] and mode=='freq':
+            frequencyper1000 += char 
+        elif char == '(':
+            mode = 'amount'
+        elif char in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'] and mode=='amount':
+            amount+=char
+        elif char == ')':
+            codons.append(Codon(codon, float(frequencyper1000),int(amount),codon_to_aminoacid[codon]))
+            codon = ''
+            frequencyper1000 = ''
+            amount = ''
+            mode = 'freq'
     codons = set_rare_codons(codons)
     return codons
 
