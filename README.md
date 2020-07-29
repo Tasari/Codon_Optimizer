@@ -63,7 +63,7 @@ Version 1.1.1 (Recent):
 - Known Bugs:
     1. Forbid sequence is not taking CG balance into account
 
-Version 1.1.0 (Recent):
+Version 1.1.0:
 
 - New:
 
