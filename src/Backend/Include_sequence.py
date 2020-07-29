@@ -1,7 +1,9 @@
 import re
 from .tools import find_sequence_in_gene, rewrite_sequence_to_protein, rewrite_codons_to_sequence
 from .CAI_calculation import calculate_CAI
+from ..logs import errors
 from itertools import product
+
 
 def create_potential_sequences(sequence):
     all_sequences = []
@@ -27,9 +29,13 @@ def get_best_sequence(sequence, gene, formatted_codon_bias):
     return good_sequences[max(good_sequences.keys())]
 
 def include_sequence(sequence, gene, formatted_codon_bias):
-
-    occurance = find_sequence_in_gene(rewrite_sequence_to_protein(get_best_sequence(sequence, gene, formatted_codon_bias)), rewrite_sequence_to_protein(gene))[0]*3
-    final_sequence = gene[0:occurance]
-    final_sequence += sequence[0]
-    final_sequence += gene[occurance+len(sequence[0]):]
-    return final_sequence
+    if sequence != ['']:
+        try:
+            occurance = find_sequence_in_gene(rewrite_sequence_to_protein(get_best_sequence(sequence, gene, formatted_codon_bias)), rewrite_sequence_to_protein(gene))[0]*3
+            final_sequence = gene[0:occurance]
+            final_sequence += sequence[0]
+            final_sequence += gene[occurance+len(sequence[0]):]
+            return final_sequence
+        except:
+            errors.append("Failed to find good place for sequence")
+    return gene

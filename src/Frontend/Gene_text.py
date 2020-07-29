@@ -1,4 +1,5 @@
 from tkinter import scrolledtext, Frame, Label, END, INSERT
+from src.logs import errors
 
 class Gene_text(Frame):
     def __init__(self, master, label=0):
@@ -16,7 +17,7 @@ class Gene_text(Frame):
         self.CGs = Label(self.dataframe, text="CG% = 00.00% CG1 = 00.00% CG2 = 00.00% CG3 = 00.00%")
         self.CGs.grid(row=0, column=1)
     def all_data(self):
-        return self.text.get('1.0', END)
+        return self.text.get('1.0', END).replace("\n", "").upper()
 
     def set_data(self, sequence):
         self.text.delete('1.0', END)
@@ -27,3 +28,9 @@ class Gene_text(Frame):
 
     def set_CGs(self, CGstable):
         self.CGs.config(text="CG% = {:02.2f}% CG1 = {:02.2f}% CG2 = {:02.2f}% CG3 = {:02.2f}%".format(CGstable[0], CGstable[1], CGstable[2], CGstable[3]))
+
+    def check_if_text_is_gene(self):
+        for char in self.all_data():
+            if char not in ['A', 'T', 'U', 'C', 'G']:
+                errors.append("Found invalid base in input: {}".format(char))
+                raise Exception

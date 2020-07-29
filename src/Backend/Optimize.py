@@ -12,17 +12,22 @@ from .tools import limit_codon_bias_by_eliminating_rare_codons
 from ..logs import errors, failed_forbidding
 
 def optimize(codon_bias, input_gene, output_gene, checklist_board, logs):
-    formatted_codon_bias = format_codon_bias(codon_bias.all_data())
-    final_sequence = input_gene.all_data().replace('T', 'U').replace('\n', '').upper()
     try:
+        codon_bias.check_table_valid()
+        formatted_codon_bias = format_codon_bias(codon_bias.all_data())
+        final_sequence = input_gene.all_data().replace('T', 'U').replace('\n', '').upper()
         try:
             assert(len(final_sequence)%3==0)
         except AssertionError:
             errors.append("Input Sequence is not dividable by 3")
+            raise Exception
         try:
             assert(len(formatted_codon_bias)==64)
         except AssertionError:
             errors.append("Not enough codons in table")
+            raise Exception
+
+        input_gene.check_if_text_is_gene()
         all_forbidden_sequences = []
         if checklist_board.CAI_maximize_check.get():
             final_sequence = maximize_CAI(rewrite_sequence_to_aminoacids(final_sequence), \
