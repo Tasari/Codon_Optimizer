@@ -1,6 +1,8 @@
 import pytest
 from .Backend.Format_Codon_Bias import format_codon_bias, create_formatted_codon_bias_from_sequence, set_rare_codons
 from .Backend.Codon import Codon
+from .Backend.CAI_calculation import calculate_CAI
+from .Backend.Maximize_CAI import maximize_CAI
 
 initial_gene = '''
 ATGAGGGGCATGAAGCTGCTGGGGGCGCTGCTGGCACTGGCGGCCCTACTGCAGGGGGCCGT
@@ -56,3 +58,14 @@ def test_formatting_sequence_to_codon_bias():
     assert formatted_codon_bias[0].bases == 'CGA'
     assert formatted_codon_bias[1].amount == 0
     assert formatted_codon_bias[2].frequencyper1000 == 0.1
+
+def test_CAI_calculation():
+    formatted_codon_bias = format_codon_bias(initial_codon_bias_table)
+    assert(calculate_CAI('UUCUUCUUC', formatted_codon_bias, alldata=0) == 1)
+    assert(calculate_CAI('UUCUUCUUU', formatted_codon_bias, alldata=0) == 0.641)
+
+def test_CAI_maximalization():
+    formatted_codon_bias = format_codon_bias(initial_codon_bias_table)
+    aminoacid_sequence = 'DADARAVE'
+    sequence = maximize_CAI(aminoacid_sequence, formatted_codon_bias)
+    assert(calculate_CAI(sequence, formatted_codon_bias, alldata=0) == 1)
