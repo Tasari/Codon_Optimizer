@@ -1,8 +1,9 @@
 import pytest
-from .Backend.Format_Codon_Bias import format_codon_bias, create_formatted_codon_bias_from_sequence, set_rare_codons
-from .Backend.Codon import Codon
-from .Backend.CAI_calculation import calculate_CAI
-from .Backend.Maximize_CAI import maximize_CAI
+from src.Backend.Format_Codon_Bias import format_codon_bias, create_formatted_codon_bias_from_sequence, set_rare_codons
+from src.Backend.Codon import Codon
+from src.Backend.CAI_calculation import calculate_CAI
+from src.Backend.Maximize_CAI import maximize_CAI
+from src.Backend.tools import *
 
 initial_gene = '''
 ATGAGGGGCATGAAGCTGCTGGGGGCGCTGCTGGCACTGGCGGCCCTACTGCAGGGGGCCGT
@@ -69,3 +70,11 @@ def test_CAI_maximalization():
     aminoacid_sequence = 'DADARAVE'
     sequence = maximize_CAI(aminoacid_sequence, formatted_codon_bias)
     assert(calculate_CAI(sequence, formatted_codon_bias, alldata=0) == 1)
+
+def test_rewriting():
+    assert(rewrite_sequence_to_protein('AUACUAGGC') == 'ILG')
+    assert(rewrite_sequence_to_codons('AUACUAGGC') == ['AUA', 'CUA', 'GGC'])
+    assert(rewrite_sequence_to_aminoacids('AUACUAGGC') == ['I', 'L', 'G'])
+    assert(rewrite_codons_to_sequence(['AUA', 'CUA', 'GGC']) == 'AUACUAGGC')
+    assert(rewrite_codons_to_protein(['AUA', 'CUA', 'GGC']) == 'ILG')
+    assert(rewrite_codons_to_aminoacids(['AUA', 'CUA', 'GGC']) == ['I', 'L', 'G'])
