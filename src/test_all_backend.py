@@ -81,3 +81,7 @@ def test_rewriting():
 
 def test_get_most_frequent_codons():
     assert(get_most_frequent_codons(format_codon_bias(initial_codon_bias_table))['P'].bases == 'CCG')
+
+def test_find_sequence_in_gene():
+    assert(find_sequence_in_gene('A', 'AAACAG') == [0, 1, 2, 4])
+    assert(find_sequence_in_gene('AA', 'AAACAG') == [0])
