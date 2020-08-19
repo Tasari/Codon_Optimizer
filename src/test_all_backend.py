@@ -78,3 +78,6 @@ def test_rewriting():
     assert(rewrite_codons_to_sequence(['AUA', 'CUA', 'GGC']) == 'AUACUAGGC')
     assert(rewrite_codons_to_protein(['AUA', 'CUA', 'GGC']) == 'ILG')
     assert(rewrite_codons_to_aminoacids(['AUA', 'CUA', 'GGC']) == ['I', 'L', 'G'])
+
+def test_get_most_frequent_codons():
+    assert(get_most_frequent_codons(format_codon_bias(initial_codon_bias_table))['P'].bases == 'CCG')
