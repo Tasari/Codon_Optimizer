@@ -1,10 +1,13 @@
 import pytest
+from unittest.mock import Mock
 from src.Backend.Format_Codon_Bias import format_codon_bias, create_formatted_codon_bias_from_sequence, set_rare_codons
 from src.Backend.Codon import Codon
 from src.Backend.CAI_calculation import calculate_CAI
 from src.Backend.Maximize_CAI import maximize_CAI
 from src.Backend.tools import *
 from src.Backend.Calculate_CG import create_codon_bias_supersequence, calculateCGs
+from src.Backend.Harmonize import score, set_priority, replace_nth_codon, Harmonize
+
 
 initial_gene = '''
 ATGAGGGGCATGAAGCTGCTGGGGGCGCTGCTGGCACTGGCGGCCCTACTGCAGGGGGCCGT
@@ -92,3 +95,23 @@ def test_supersequence_creation():
 
 def test_cg_calculation():
     assert(calculateCGs('CGATATTGATCT')== [4/12*100, 1/4*100, 3/4*100, 0/4*100])
+
+def test_cg_score():
+    codon = Mock()
+    codon.bases = 'CGA'
+    codon.frequencyper1000 = 15
+    assert(score(codon, 1, 1, 1) == 2)
+    assert(score(codon, 1, 0, 1) == 1)
+    assert(score(codon, 1, -1, 1) == 0)
+    assert(score(codon, 0, 0, -1) == 0)
+    codon.frequencyper1000 = 9    
+    assert(score(codon, 1, 1, 1) == 1)
+
+def test_set_priority():
+    assert(set_priority(format_codon_bias(initial_codon_bias_table), [48.2, 14.5, 13.2, 33.3], [42.2, 12.5, 10.1, 21.5], 'I').bases == 'AUU')
+
+def test_replace_nth_codon():
+    assert(replace_nth_codon('ACCACCACCACC', 'ACC', 'ACG', 2) == 'ACCACGACCACG')
+
+def test_harmonize():
+    assert(Harmonize('ATGAGGGGCATGAAGCTGCTGGGGGCGCTGCTGGCACTGGCGGCCCTACTGCAGGGGGCCGTGTCCCTGAAGATCGCAGCC', format_codon_bias(initial_codon_bias_table), 3) == 'ATGAGGGGCATGAAGCTGCTGGGGGCGCTGCTGGCACTGGCGGCCCTACTGCAGGGGGCCGTGTCCCTGAAGATCGCAGCA')
