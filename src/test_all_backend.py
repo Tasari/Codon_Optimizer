@@ -4,6 +4,7 @@ from src.Backend.Codon import Codon
 from src.Backend.CAI_calculation import calculate_CAI
 from src.Backend.Maximize_CAI import maximize_CAI
 from src.Backend.tools import *
+from src.Backend.Calculate_CG import create_codon_bias_supersequence, calculateCGs
 
 initial_gene = '''
 ATGAGGGGCATGAAGCTGCTGGGGGCGCTGCTGGCACTGGCGGCCCTACTGCAGGGGGCCGT
@@ -85,3 +86,9 @@ def test_get_most_frequent_codons():
 def test_find_sequence_in_gene():
     assert(find_sequence_in_gene('A', 'AAACAG') == [0, 1, 2, 4])
     assert(find_sequence_in_gene('AA', 'AAACAG') == [0])
+
+def test_supersequence_creation():
+    assert(create_codon_bias_supersequence(format_codon_bias('UUA  0.5(     1)  UCA  2.2(     4)')) == 'UUAUCAUCAUCAUCA') 
+
+def test_cg_calculation():
+    assert(calculateCGs('CGATATTGATCT')== [4/12*100, 1/4*100, 3/4*100, 0/4*100])
