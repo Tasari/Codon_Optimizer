@@ -82,13 +82,11 @@ def eliminate_occurances_of_sequence(sequence, final_sequence, done_sequences, l
         begin = sequence_range[1]
         if failed and sequence.replace('U', 'T') not in failed_forbidding:
             failed_forbidding.append(sequence.replace('U', 'T'))
-
     new_sequence += final_sequence[begin:]
     if all_occurances_of_sequence != []:
         final_sequence = new_sequence
     if find_sequence_in_gene(sequence, final_sequence) != [] and not failed:
         return final_sequence, 1
-
     return final_sequence, 0
 
 def forbid_sequences(all_forbidden_sequences, input_string, formatted_codon_bias_table):
@@ -97,6 +95,8 @@ def forbid_sequences(all_forbidden_sequences, input_string, formatted_codon_bias
     if all_forbidden_sequences != []:
         all_forbidden_sequences = list(dict.fromkeys(sorted(all_forbidden_sequences, key=len)))
         still_found=1
+        for number, sequence in enumerate(all_forbidden_sequences):
+            all_forbidden_sequences[number] = sequence.replace('T', 'U')
     while still_found:
         done_sequences = [] 
         for sequence in all_forbidden_sequences:

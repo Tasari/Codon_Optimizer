@@ -9,6 +9,8 @@ from src.Backend.Calculate_CG import create_codon_bias_supersequence, calculateC
 from src.Backend.Harmonize import score, set_priority, replace_nth_codon, Harmonize
 from src.Backend.remove_hidden_codons import create_hidden_codons, add_hidden_codons_to_forbidden
 from src.Backend.Repetitive_bases_remover import add_repetitive_bases_to_forbidden
+from src.Backend.Forbid_sequence import forbid_sequences
+
 
 initial_gene = '''
 ATGAGGGGCATGAAGCTGCTGGGGGCGCTGCTGGCACTGGCGGCCCTACTGCAGGGGGCCGT
@@ -125,3 +127,11 @@ def test_adding_hidden_to_forbidden():
 
 def test_adding_repetitive_bases_to_forbidden():
     assert(add_repetitive_bases_to_forbidden([], 5) == ['AAAAA', 'CCCCC', 'GGGGG', 'TTTTT'])    
+
+def test_forbidding_sequence():
+    forbid_start = 'AAAAAAAAAAAACCCCCCCCC'
+    forbidden_protein = rewrite_sequence_to_protein(forbid_start)
+    new_sequence = forbid_sequences(['AAA', 'CCC'], 'AAAAAAAAAAAACCCCCCCCC', format_codon_bias(initial_codon_bias_table))
+    assert(find_sequence_in_gene('AAA', new_sequence) == [])
+    assert(find_sequence_in_gene('CCC', new_sequence) == [])
+    assert(forbidden_protein == rewrite_sequence_to_protein(new_sequence))
