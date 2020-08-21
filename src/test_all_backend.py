@@ -8,6 +8,7 @@ from src.Backend.tools import *
 from src.Backend.Calculate_CG import create_codon_bias_supersequence, calculateCGs
 from src.Backend.Harmonize import score, set_priority, replace_nth_codon, Harmonize
 from src.Backend.remove_hidden_codons import create_hidden_codons, add_hidden_codons_to_forbidden
+from src.Backend.Repetitive_bases_remover import add_repetitive_bases_to_forbidden
 
 initial_gene = '''
 ATGAGGGGCATGAAGCTGCTGGGGGCGCTGCTGGCACTGGCGGCCCTACTGCAGGGGGCCGT
@@ -122,4 +123,5 @@ def test_hidden_codons_creation():
 def test_adding_hidden_to_forbidden():
     assert(add_hidden_codons_to_forbidden([], ['ACC']).sort() == ['ACCC', 'ATCC', 'AACC', 'ACTC', 'AGCC', 'ACGC', 'ACAC'].sort())
 
-    
+def test_adding_repetitive_bases_to_forbidden():
+    assert(add_repetitive_bases_to_forbidden([], 5) == ['AAAAA', 'CCCCC', 'GGGGG', 'TTTTT'])    
