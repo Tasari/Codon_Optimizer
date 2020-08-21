@@ -7,7 +7,7 @@ from src.Backend.Maximize_CAI import maximize_CAI
 from src.Backend.tools import *
 from src.Backend.Calculate_CG import create_codon_bias_supersequence, calculateCGs
 from src.Backend.Harmonize import score, set_priority, replace_nth_codon, Harmonize
-
+from src.Backend.remove_hidden_codons import create_hidden_codons, add_hidden_codons_to_forbidden
 
 initial_gene = '''
 ATGAGGGGCATGAAGCTGCTGGGGGCGCTGCTGGCACTGGCGGCCCTACTGCAGGGGGCCGT
@@ -115,3 +115,11 @@ def test_replace_nth_codon():
 
 def test_harmonize():
     assert(Harmonize('ATGAGGGGCATGAAGCTGCTGGGGGCGCTGCTGGCACTGGCGGCCCTACTGCAGGGGGCCGTGTCCCTGAAGATCGCAGCC', format_codon_bias(initial_codon_bias_table), 3) == 'ATGAGGGGCATGAAGCTGCTGGGGGCGCTGCTGGCACTGGCGGCCCTACTGCAGGGGGCCGTGTCCCTGAAGATCGCAGCA')
+
+def test_hidden_codons_creation():
+    assert(create_hidden_codons('ATG').sort() == ['ATAG', 'ATTG', 'ATCG', 'ATGG', 'AATG', 'ACTG', 'AGTG'].sort())
+
+def test_adding_hidden_to_forbidden():
+    assert(add_hidden_codons_to_forbidden([], ['ACC']).sort() == ['ACCC', 'ATCC', 'AACC', 'ACTC', 'AGCC', 'ACGC', 'ACAC'].sort())
+
+    
