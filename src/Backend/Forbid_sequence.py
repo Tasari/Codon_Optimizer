@@ -65,7 +65,8 @@ def change_sequence_to_eliminate_occurance(input_string, done_sequences, formatt
             best = calculated
     return best[1], 0
 
-def eliminate_occurances_of_sequence(sequence, final_sequence, done_sequences, lenght, formatted_codon_bias_table):
+def eliminate_occurances_of_sequence(final_sequence, done_sequences, lenght, formatted_codon_bias_table):
+    sequence = done_sequences[-1]
     all_occurances_of_sequence = find_sequence_in_gene(sequence, final_sequence)
     begin = 0
     new_sequence = ''
@@ -102,6 +103,6 @@ def forbid_sequences(all_forbidden_sequences, input_string, formatted_codon_bias
         for sequence in all_forbidden_sequences:
             lenght = get_valid_sequence_lenght(all_forbidden_sequences[len(all_forbidden_sequences)-1])
             done_sequences.append(sequence)
-            final_sequence, still_found = eliminate_occurances_of_sequence(sequence, final_sequence, done_sequences, lenght, formatted_codon_bias_table)
+            final_sequence, still_found = eliminate_occurances_of_sequence(final_sequence, done_sequences, lenght, formatted_codon_bias_table)
     errors.append("Failed to eliminate sequeces: {}".format(failed_forbidding))
     return final_sequence

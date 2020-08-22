@@ -9,7 +9,7 @@ from src.Backend.Calculate_CG import create_codon_bias_supersequence, calculateC
 from src.Backend.Harmonize import score, set_priority, replace_nth_codon, Harmonize
 from src.Backend.remove_hidden_codons import create_hidden_codons, add_hidden_codons_to_forbidden
 from src.Backend.Repetitive_bases_remover import add_repetitive_bases_to_forbidden
-from src.Backend.Forbid_sequence import forbid_sequences
+from src.Backend.Forbid_sequence import forbid_sequences, eliminate_occurances_of_sequence
 
 
 initial_gene = '''
@@ -135,3 +135,7 @@ def test_forbidding_sequence():
     assert(find_sequence_in_gene('AAA', new_sequence) == [])
     assert(find_sequence_in_gene('CCC', new_sequence) == [])
     assert(forbidden_protein == rewrite_sequence_to_protein(new_sequence))
+
+def test_eliminating_occurances():
+    assert(eliminate_occurances_of_sequence('AAGAAGAAGAAG', ['AAA', 'AAG'], 3, format_codon_bias(initial_codon_bias_table))[1] == 0)
+    
