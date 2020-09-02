@@ -30,6 +30,8 @@ def get_best_sequence(sequence, gene, formatted_codon_bias):
 
 def include_sequence(sequence, gene, formatted_codon_bias):
     if sequence != ['']:
+        if find_sequence_in_gene(sequence[0], gene) != []:
+            return gene            
         try:
             occurance = find_sequence_in_gene(rewrite_sequence_to_protein(get_best_sequence(sequence, gene, formatted_codon_bias)), rewrite_sequence_to_protein(gene))[0]*3
             final_sequence = gene[0:occurance]
