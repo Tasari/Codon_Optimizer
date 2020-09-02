@@ -10,6 +10,7 @@ from src.Backend.Harmonize import score, set_priority, replace_nth_codon, Harmon
 from src.Backend.remove_hidden_codons import create_hidden_codons, add_hidden_codons_to_forbidden
 from src.Backend.Repetitive_bases_remover import add_repetitive_bases_to_forbidden
 from src.Backend.Forbid_sequence import forbid_sequences, eliminate_occurances_of_sequence, get_codons_based_on_aminoacid, check_if_sequences_in_forbidden, get_sequence_from_occurance_places, get_valid_sequence_lenght
+from src.Backend.Optimize import optimize
 
 initial_gene = '''
 ATGAGGGGCATGAAGCTGCTGGGGGCGCTGCTGGCACTGGCGGCCCTACTGCAGGGGGCCGT
@@ -28,8 +29,7 @@ TTCCAGGCTGCCTATGGCCTGAGTGACCAACTGGCCCAAGCCATCAGTGACCACTATCCAGTGG
 AGGTGATGCTGAAGTGA
 '''
 
-initial_codon_bias_table = '''
-UUU  8.2(    15)  UCU  2.2(     4)  UAU 11.5(    21)  UGU  3.3(     6)
+initial_codon_bias_table = '''UUU  8.2(    15)  UCU  2.2(     4)  UAU 11.5(    21)  UGU  3.3(     6)
 UUC 31.1(    57)  UCC 11.5(    21)  UAC 16.9(    31)  UGC  9.8(    18)
 UUA  0.5(     1)  UCA  2.2(     4)  UAA  0.5(     1)  UGA  2.2(     4)
 UUG 11.5(    21)  UCG 13.6(    25)  UAG  0.0(     0)  UGG 15.3(    28)
@@ -150,3 +150,6 @@ def test_get_sequence_from_occurance_places():
 
 def test_check_if_in_forbidden():
     assert(check_if_sequences_in_forbidden('AAA', ['CAC', 'AAA']) == 1)
+
+def test_optimize():
+    assert(optimize(format_codon_bias(initial_codon_bias_table), 'ATGAGGGGCATGAAGCTGCTGGGGGCGCTGCTGGCACTGGCGGCCCTACTGCAGGGGGCCGTG', [1, 1, (1, ['ACG']), 1, (1, ['UUA']), (1, ['AUA'])]) == 'ATGCGGGGCATGATACTGCTGGGCGCCCTGCTGGCCCTTGCCGCCCTGCTGCAGGGCGCAGTC')

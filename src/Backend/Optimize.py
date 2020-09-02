@@ -29,9 +29,9 @@ def front_optimize(codon_bias_entry, input_gene_entry, output_gene_entry, checkl
         else:
             formatted_codon_bias = create_formatted_codon_bias_from_sequence(codon_bias_entry.all_data())
         input_gene_entry.check_if_text_is_gene()
-        input_gene_text = input_gene_entry.all_data().replace('T', 'U').replace('\n', '').upper()
+        input_gene_text = input_gene_entry.all_data()
         checklist_board_list = create_checklist_board_list(checklist_board)
-        output_gene_entry.set_data(optimize(formatted_codon_bias, input_gene_text, checklist_board_list).replace('U', 'T'))
+        output_gene_entry.set_data(optimize(formatted_codon_bias, input_gene_text, checklist_board_list))
         calculate_CAI(input_gene_entry, formatted_codon_bias)
         calculate_CAI(output_gene_entry, formatted_codon_bias)
         input_gene_entry.set_CGs(calculateCGs(input_gene_entry.all_data()))
@@ -45,6 +45,7 @@ def front_optimize(codon_bias_entry, input_gene_entry, output_gene_entry, checkl
         failed_forbidding.clear()
 
 def optimize(formatted_codon_bias, input_gene_text, checklist_board_list):
+    input_gene_text = input_gene_text.replace('T', 'U').replace('\n', '').upper()
     try:
         try:
             assert(len(input_gene_text)%3==0)
@@ -74,4 +75,4 @@ def optimize(formatted_codon_bias, input_gene_text, checklist_board_list):
             final_sequence = include_sequence(checklist_board_list[5][1], final_sequence, formatted_codon_bias)
     except:
         pass
-    return final_sequence
+    return final_sequence.replace('U', 'T')
