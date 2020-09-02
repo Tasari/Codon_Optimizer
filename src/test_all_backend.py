@@ -9,8 +9,7 @@ from src.Backend.Calculate_CG import create_codon_bias_supersequence, calculateC
 from src.Backend.Harmonize import score, set_priority, replace_nth_codon, Harmonize
 from src.Backend.remove_hidden_codons import create_hidden_codons, add_hidden_codons_to_forbidden
 from src.Backend.Repetitive_bases_remover import add_repetitive_bases_to_forbidden
-from src.Backend.Forbid_sequence import forbid_sequences, eliminate_occurances_of_sequence
-
+from src.Backend.Forbid_sequence import forbid_sequences, eliminate_occurances_of_sequence, get_codons_based_on_aminoacid, check_if_sequences_in_forbidden, get_sequence_from_occurance_places, get_valid_sequence_lenght
 
 initial_gene = '''
 ATGAGGGGCATGAAGCTGCTGGGGGCGCTGCTGGCACTGGCGGCCCTACTGCAGGGGGCCGT
@@ -139,3 +138,15 @@ def test_forbidding_sequence():
 def test_eliminating_occurances():
     assert(eliminate_occurances_of_sequence('AAGAAGAAGAAG', ['AAA', 'AAG'], 3, format_codon_bias(initial_codon_bias_table))[1] == 0)
     
+def test_get_codons_based_on_aminoacid():
+    assert(get_codons_based_on_aminoacid(['I', 'M'], format_codon_bias(initial_codon_bias_table)) ==  [['AUU', 'AUC', 'AUA'], ['AUG']])
+
+def test_get_valid_lenght():
+    assert(get_valid_sequence_lenght('ACAT') == 6)
+    assert(get_valid_sequence_lenght('ACA') == 3)
+
+def test_get_sequence_from_occurance_places():
+    assert(get_sequence_from_occurance_places('AAACCCGGGTTT', 2, 3) == (0, 6))
+
+def test_check_if_in_forbidden():
+    assert(check_if_sequences_in_forbidden('AAA', ['CAC', 'AAA']) == 1)
