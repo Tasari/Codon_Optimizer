@@ -1,5 +1,5 @@
-from .Calculate_CG import calculateCGs, create_codon_bias_supersequence
-from .tools import get_most_frequent_codons, rewrite_sequence_to_codons
+from .Calculate_CG import calculateCGs
+from .tools import get_most_frequent_codons, rewrite_sequence_to_codons, create_codon_bias_supersequence
 import re
 
 def score(codon, cg1, cg2, cg3):

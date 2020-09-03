@@ -2,13 +2,13 @@ from .Format_Codon_Bias import format_codon_bias, create_formatted_codon_bias_fr
 from .Maximize_CAI import maximize_CAI
 from .tools import rewrite_sequence_to_aminoacids
 from .CAI_calculation import calculate_CAI
-from .Calculate_CG import calculateCGs, create_codon_bias_supersequence
+from .Calculate_CG import calculateCGs
 from .Forbid_sequence import forbid_sequences, add_forbid_sequences_to_all
 from .Harmonize import  Harmonize
 from .Include_sequence import include_sequence
 from .remove_hidden_codons import add_hidden_codons_to_forbidden
 from .Repetitive_bases_remover import add_repetitive_bases_to_forbidden
-from .tools import limit_codon_bias_by_eliminating_rare_codons
+from .tools import limit_codon_bias_by_eliminating_rare_codons, create_codon_bias_supersequence
 from ..logs import errors, failed_forbidding
 
 def create_checklist_board_list(checklist_board):

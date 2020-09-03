@@ -85,3 +85,9 @@ def limit_codon_bias_by_eliminating_rare_codons(formatted_codon_bias):
         else:
             limited_codon_bias.append(codon)
     return limited_codon_bias
+
+def create_codon_bias_supersequence(formatted_codon_bias_table):
+    superstring = ''
+    for codon in formatted_codon_bias_table:
+        superstring += codon.bases*codon.amount
+    return superstring

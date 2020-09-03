@@ -5,7 +5,7 @@ from src.Backend.Codon import Codon
 from src.Backend.CAI_calculation import calculate_CAI
 from src.Backend.Maximize_CAI import maximize_CAI
 from src.Backend.tools import *
-from src.Backend.Calculate_CG import create_codon_bias_supersequence, calculateCGs
+from src.Backend.Calculate_CG import calculateCGs
 from src.Backend.Harmonize import score, set_priority, replace_nth_codon, Harmonize
 from src.Backend.remove_hidden_codons import create_hidden_codons, add_hidden_codons_to_forbidden
 from src.Backend.Repetitive_bases_remover import add_repetitive_bases_to_forbidden
@@ -96,7 +96,7 @@ def test_supersequence_creation():
     assert(create_codon_bias_supersequence(format_codon_bias('UUA  0.5(     1)  UCA  2.2(     4)')) == 'UUAUCAUCAUCAUCA') 
 
 def test_cg_calculation():
-    assert(calculateCGs('CGATATTGATCT')== [4/12*100, 1/4*100, 3/4*100, 0/4*100])
+    assert(calculateCGs('CGATATTGATCT')== (4/12*100, 1/4*100, 3/4*100, 0/4*100))
 
 def test_cg_score():
     codon = Mock()
