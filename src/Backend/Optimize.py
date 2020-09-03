@@ -29,13 +29,14 @@ def front_optimize(codon_bias_entry, input_gene_entry, output_gene_entry, checkl
         else:
             formatted_codon_bias = create_formatted_codon_bias_from_sequence(codon_bias_entry.all_data())
         input_gene_entry.check_if_text_is_gene()
-        input_gene_text = input_gene_entry.all_data()
+        input_gene_text = input_gene_entry.all_data().replace('T', 'U').replace('\n', '').upper()
         checklist_board_list = create_checklist_board_list(checklist_board)
         output_gene_entry.set_data(optimize(formatted_codon_bias, input_gene_text, checklist_board_list))
-        calculate_CAI(input_gene_entry, formatted_codon_bias)
-        calculate_CAI(output_gene_entry, formatted_codon_bias)
-        input_gene_entry.set_CGs(calculateCGs(input_gene_entry.all_data()))
-        output_gene_entry.set_CGs(calculateCGs(output_gene_entry.all_data()))
+        output_gene_text = output_gene_entry.all_data().replace('T', 'U').replace('\n', '').upper()
+        input_gene_entry.set_CAI(calculate_CAI(input_gene_text, formatted_codon_bias))
+        output_gene_entry.set_CAI(calculate_CAI(output_gene_text, formatted_codon_bias))
+        input_gene_entry.set_CGs(calculateCGs(input_gene_text))
+        output_gene_entry.set_CGs(calculateCGs(output_gene_text))
         codon_bias_entry.set_CGs(calculateCGs(create_codon_bias_supersequence(formatted_codon_bias)))
     except:
         pass

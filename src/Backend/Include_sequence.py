@@ -25,7 +25,7 @@ def get_best_sequence(sequence, gene, formatted_codon_bias):
     good_sequences = {}
     for potential in create_potential_sequences(sequence):
         if find_sequence_in_gene(rewrite_sequence_to_protein(potential), rewritten_gene) != []:
-            good_sequences[calculate_CAI(potential, formatted_codon_bias, 0)] = potential
+            good_sequences[calculate_CAI(potential, formatted_codon_bias)] = potential
     return good_sequences[max(good_sequences.keys())]
 
 def include_sequence(sequence, gene, formatted_codon_bias):

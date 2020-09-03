@@ -60,7 +60,7 @@ def change_sequence_to_eliminate_occurance(input_string, done_sequences, formatt
         return input_string, 1
     best = (0, '')
     for possibility in good_possibilities:
-        calculated = (calculate_CAI(possibility, formatted_codon_bias_table, 0), possibility)
+        calculated = (calculate_CAI(possibility, formatted_codon_bias_table), possibility)
         if calculated[0] > best[0]:
             best = calculated
     return best[1], 0

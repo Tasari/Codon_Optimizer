@@ -68,14 +68,14 @@ def test_formatting_sequence_to_codon_bias():
 
 def test_CAI_calculation():
     formatted_codon_bias = format_codon_bias(initial_codon_bias_table)
-    assert(calculate_CAI('UUCUUCUUC', formatted_codon_bias, alldata=0) == 1)
-    assert(calculate_CAI('UUCUUCUUU', formatted_codon_bias, alldata=0) == 0.641)
+    assert(calculate_CAI('UUCUUCUUC', formatted_codon_bias) == 1)
+    assert(calculate_CAI('UUCUUCUUU', formatted_codon_bias) == 0.641)
 
 def test_CAI_maximalization():
     formatted_codon_bias = format_codon_bias(initial_codon_bias_table)
     aminoacid_sequence = 'DADARAVE'
     sequence = maximize_CAI(aminoacid_sequence, formatted_codon_bias)
-    assert(calculate_CAI(sequence, formatted_codon_bias, alldata=0) == 1)
+    assert(calculate_CAI(sequence, formatted_codon_bias) == 1)
 
 def test_rewriting():
     assert(rewrite_sequence_to_protein('AUACUAGGC') == 'ILG')

@@ -4,11 +4,8 @@ from .tools import get_most_frequent_codons, rewrite_sequence_to_codons, reforma
 def geomean(xs):
     return exp(fsum(log(x) for x in xs) / len(xs))
 
-def calculate_CAI(data, formatted_codon_bias_table, alldata=1):
-    if alldata:
-        sequence = data.all_data().replace("T", 'U').replace('\n', '').upper()
-    else:
-        sequence=data
+def calculate_CAI(data, formatted_codon_bias_table):
+    sequence=data
     to_count=[]
     codon_freq_aa = reformat_table_codon_freq_aa(formatted_codon_bias_table)
     forbidden = ['UGG', 'AUG', 'UAA', 'UGA', 'UAG']
@@ -18,6 +15,4 @@ def calculate_CAI(data, formatted_codon_bias_table, alldata=1):
             continue
         to_count.append(codon_freq_aa[codon][0]/most_frequent_codons[codon_freq_aa[codon][1]].frequencyper1000)
     result = round(geomean(to_count), 3)
-    if alldata:
-        data.set_CAI(result)
     return result 
