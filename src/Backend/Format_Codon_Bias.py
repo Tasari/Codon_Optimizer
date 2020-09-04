@@ -5,25 +5,22 @@ from ..logs import errors
 
 def format_codon_bias(codon_bias_table):
     codons = []
-    codon = ''
-    frequencyper1000 = ''
-    amount = ''
-    mode = 'freq'
+    actual_codon = {'bases':'', 'frequencyper1000':'', 'amount':'', 'mode':'freq'}
     for char in codon_bias_table:
         if char in ['A', 'C', 'G', 'U']:
-            codon+=char
-        elif char in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'] and mode=='freq':
-            frequencyper1000 += char 
+            actual_codon['bases'] += char
+        elif char in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'] and actual_codon['mode']=='freq':
+            actual_codon['frequencyper1000'] += char 
         elif char == '(':
-            mode = 'amount'
-        elif char in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'] and mode=='amount':
-            amount+=char
+            actual_codon['mode'] = 'amount'
+        elif char in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'] and actual_codon['mode']=='amount':
+            actual_codon['amount'] += char
         elif char == ')':
-            codons.append(Codon(codon, float(frequencyper1000),int(amount),codon_to_aminoacid[codon]))
-            codon = ''
-            frequencyper1000 = ''
-            amount = ''
-            mode = 'freq'
+            codons.append(Codon(actual_codon['bases'], \
+                          float(actual_codon['frequencyper1000']), \
+                            int(actual_codon['amount']), \
+                                codon_to_aminoacid[actual_codon['bases']]))
+            actual_codon = {'bases':'', 'frequencyper1000':'', 'amount':'', 'mode':'freq'}
     codons = set_rare_codons(codons)
     return codons
 
