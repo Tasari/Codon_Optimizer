@@ -6,7 +6,7 @@ from src.Backend.CAI_calculation import calculate_CAI
 from src.Backend.Maximize_CAI import maximize_CAI
 from src.Backend.tools import *
 from src.Backend.Calculate_CG import calculateCGs
-from src.Backend.Harmonize import score, set_priority, replace_nth_codon, Harmonize
+from src.Backend.Harmonize import score, get_best_codon_with_optimal_score, replace_nth_codon, Harmonize
 from src.Backend.remove_hidden_codons import create_hidden_codons, add_hidden_codons_to_forbidden
 from src.Backend.Repetitive_bases_remover import add_repetitive_bases_to_forbidden
 from src.Backend.Forbid_sequence import forbid_sequences, eliminate_occurances_of_sequence, get_codons_based_on_aminoacid, check_if_sequences_in_forbidden, get_sequence_from_occurance_places, get_valid_sequence_lenght
@@ -109,8 +109,8 @@ def test_cg_score():
     codon.frequencyper1000 = 9    
     assert(score(codon, 1, 1, 1) == 1)
 
-def test_set_priority():
-    assert(set_priority(format_codon_bias(initial_codon_bias_table), [48.2, 14.5, 13.2, 33.3], [42.2, 12.5, 10.1, 21.5], 'I').bases == 'AUU')
+def test_get_best_codon_with_optimal_score():
+    assert(get_best_codon_with_optimal_score(format_codon_bias(initial_codon_bias_table), [48.2, 14.5, 13.2, 33.3], [42.2, 12.5, 10.1, 21.5], 'I').bases == 'AUU')
 
 def test_replace_nth_codon():
     assert(replace_nth_codon('ACCACCACCACC', 'ACC', 'ACG', 2) == 'ACCACGACCACG')
