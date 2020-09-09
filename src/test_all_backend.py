@@ -5,6 +5,7 @@ from src.Backend.Codon import Codon
 from src.Backend.CAI_calculation import calculate_CAI
 from src.Backend.Maximize_CAI import maximize_CAI
 from src.Backend.tools import *
+from src.Backend.Include_sequence import include_sequence
 from src.Backend.Calculate_CG import calculateCGs
 from src.Backend.Harmonize import score, get_best_codon_with_optimal_score, replace_nth_codon, Harmonize
 from src.Backend.remove_hidden_codons import create_hidden_codons, add_hidden_codons_to_forbidden
@@ -95,6 +96,11 @@ def test_find_sequence_in_gene():
 def test_supersequence_creation():
     assert(create_codon_bias_supersequence(format_codon_bias('UUA  0.5(     1)  UCA  2.2(     4)')) == 'UUAUCAUCAUCAUCA') 
 
+def test_include_sequence():
+    assert(include_sequence(['CGC'], 'CCCCCCCCUCCA', format_codon_bias(initial_codon_bias_table)) == 'CCGCCGCCUCCA')
+    assert(include_sequence(['CCCC'], 'CCACCGCCUCCA', format_codon_bias(initial_codon_bias_table)) == 'CCCCCGCCUCCA')
+    assert(include_sequence(['CCCGC'], 'CCACCGCCUCCA', format_codon_bias(initial_codon_bias_table)) == 'CCCCCGCCGCCA')
+
 def test_cg_calculation():
     assert(calculateCGs('CGATATTGATCT')== (4/12*100, 1/4*100, 3/4*100, 0/4*100))
 
@@ -152,4 +158,4 @@ def test_check_if_in_forbidden():
     assert(check_if_sequences_in_forbidden('AAA', ['CAC', 'AAA']) == 1)
 
 def test_optimize():
-    assert(optimize(format_codon_bias(initial_codon_bias_table), 'ATGAGGGGCATGAAGCTGCTGGGGGCGCTGCTGGCACTGGCGGCCCTACTGCAGGGGGCCGTG', [1, 1, (1, ['ACG']), 1, (1, ['UUA']), (1, ['AUA'])]) == 'ATGCGGGGCATGATACTGCTGGGCGCCCTGCTGGCCCTTGCCGCCCTGCTGCAGGGCGCAGTC')
+    assert(optimize(format_codon_bias(initial_codon_bias_table), 'ATGAGGGGCATGAAGCTGCTGGGGGCGCTGCTGGCACTGGCGGCCCTACTGCAGGGGGCCGTG', [1, 1, (1, ['ACG']), 1, (1, ['UUA']), (1, ['AUA'])]) == 'ATGCGGGGCATGAAGCTGCTGGGCGCCCTGCTGGCCCTTGCCGCCCTGCTGCAGGGCGCAGTC')

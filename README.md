@@ -51,6 +51,13 @@ Genetic optimizer is tool for gene optimalization
 
 ## Changelog ##
 
+Version 1.2.2:
+
+- Updated:
+    1. Repaired include sequence which didn't respect aminoacid sequences
+- Known Bugs:
+    1. Forbid sequence is not taking CG balance into account
+
 Version 1.2.1:
 
 - Updated:
