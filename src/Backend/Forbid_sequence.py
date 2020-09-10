@@ -1,5 +1,5 @@
 import re 
-from .tools import get_most_frequent_codons, rewrite_sequence_to_aminoacids, find_sequence_in_gene, rewrite_codons_to_sequence
+from .tools import get_most_frequent_codons, rewrite_sequence_to_aminoacids, find_sequence_in_gene, rewrite_codons_to_sequence, rewrite_to_rna
 from itertools import product
 from .CAI_calculation import calculate_CAI
 from ..logs import errors, failed_forbidding
@@ -97,7 +97,7 @@ def forbid_sequences(all_forbidden_sequences, input_string, formatted_codon_bias
         all_forbidden_sequences = list(dict.fromkeys(sorted(all_forbidden_sequences, key=len)))
         still_found=1
         for number, sequence in enumerate(all_forbidden_sequences):
-            all_forbidden_sequences[number] = sequence.replace('T', 'U')
+            all_forbidden_sequences[number] = rewrite_to_rna(sequence)
     while still_found:
         done_sequences = [] 
         for sequence in all_forbidden_sequences:

@@ -1,6 +1,6 @@
 from .Format_Codon_Bias import format_codon_bias, create_formatted_codon_bias_from_sequence
 from .Maximize_CAI import maximize_CAI
-from .tools import rewrite_sequence_to_aminoacids
+from .tools import rewrite_sequence_to_aminoacids, rewrite_to_rna
 from .CAI_calculation import calculate_CAI
 from .Calculate_CG import calculateCGs
 from .Forbid_sequence import forbid_sequences, add_forbid_sequences_to_all
@@ -32,10 +32,10 @@ def front_optimize(codon_bias_entry, input_gene_entry, output_gene_entry, checkl
         else:
             formatted_codon_bias = create_formatted_codon_bias_from_sequence(codon_bias_entry.all_data())
         input_gene_entry.check_if_text_is_gene()
-        input_gene_text = input_gene_entry.all_data().replace('T', 'U').replace('\n', '').upper()
+        input_gene_text = rewrite_to_rna(input_gene_entry.all_data())
         checklist_board_list = create_checklist_board_list(checklist_board)
         output_gene_entry.set_data(optimize(formatted_codon_bias, input_gene_text, checklist_board_list))
-        output_gene_text = output_gene_entry.all_data().replace('T', 'U').replace('\n', '').upper()
+        output_gene_text = rewrite_to_rna(output_gene_entry.all_data())
         input_gene_entry.set_CAI(calculate_CAI(input_gene_text, formatted_codon_bias))
         output_gene_entry.set_CAI(calculate_CAI(output_gene_text, formatted_codon_bias))
         input_gene_entry.set_CGs(calculateCGs(input_gene_text))
@@ -49,7 +49,7 @@ def front_optimize(codon_bias_entry, input_gene_entry, output_gene_entry, checkl
         failed_forbidding.clear()
 
 def optimize(formatted_codon_bias, input_gene_text, checklist_board_list):
-    input_gene_text = input_gene_text.replace('T', 'U').replace('\n', '').upper()
+    input_gene_text = rewrite_to_rna(input_gene_text)
     try:
         try:
             assert(len(input_gene_text) % 3 == 0)

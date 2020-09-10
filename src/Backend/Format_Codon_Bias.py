@@ -1,6 +1,6 @@
 from .Codon import Codon
 from .data import codon_to_aminoacid
-from .tools import rewrite_sequence_to_codons
+from .tools import rewrite_sequence_to_codons, rewrite_to_rna
 from ..logs import errors
 
 def format_codon_bias(codon_bias_table):
@@ -57,7 +57,7 @@ def create_formatted_codon_bias_from_sequence(sequence):
 
 def change_sequence_to_use_only_bases_letters(sequence):
     whitelist = ['A', 'C', 'G', 'U']
-    whitelisted_sequence = ''.join([char for char in sequence.replace('T', 'U').upper() if char in whitelist])
+    whitelisted_sequence = ''.join([char for char in rewrite_to_rna(sequence) if char in whitelist])
     return whitelisted_sequence
 
 def set_rare_codons(formatted_codon_bias, minimal_frequency=0.1):

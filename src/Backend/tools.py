@@ -2,6 +2,10 @@ from .data import codon_to_aminoacid, all_aminoacids
 import re
 from .Calculate_CG import calculateCGs
 
+def rewrite_to_rna(sequence):
+    sequence = sequence.replace('T', 'U').replace('\n', '').upper()
+    return sequence
+
 def rewrite_sequence_to_protein(sequence):
     return rewrite_codons_to_protein(rewrite_sequence_to_codons(sequence))
 
@@ -62,7 +66,7 @@ def get_limited_table(formatted_codon_bias_table, n):
     return get_most_frequent_codons(all_codons).values()
 
 def find_sequence_in_gene(sequence, gene):
-    found_indexes = [found.start() for found in re.finditer(re.compile(sequence.replace('T', 'U')), gene)]
+    found_indexes = [found.start() for found in re.finditer(re.compile(rewrite_to_rna(sequence)), gene)]
     return found_indexes
 
 def reformat_table_codon_freq_aa(formatted_codon_bias):
