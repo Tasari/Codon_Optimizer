@@ -8,7 +8,7 @@ from .Harmonize import  Harmonize
 from .Include_sequence import include_sequence
 from .remove_hidden_codons import add_hidden_codons_to_forbidden
 from .Repetitive_bases_remover import add_repetitive_bases_to_forbidden
-from .tools import limit_codon_bias_by_eliminating_rare_codons, create_codon_bias_supersequence
+from .tools import create_codon_bias_supersequence
 from ..logs import errors, failed_forbidding
 
 def create_checklist_board_list(checklist_board):
@@ -40,7 +40,8 @@ def front_optimize(codon_bias_entry, input_gene_entry, output_gene_entry, checkl
         output_gene_entry.set_CAI(calculate_CAI(output_gene_text, formatted_codon_bias))
         input_gene_entry.set_CGs(calculateCGs(input_gene_text))
         output_gene_entry.set_CGs(calculateCGs(output_gene_text))
-        codon_bias_entry.set_CGs(calculateCGs(create_codon_bias_supersequence(formatted_codon_bias)))
+        supersequence = create_codon_bias_supersequence(formatted_codon_bias)
+        codon_bias_entry.set_CGs(calculateCGs(supersequence))
     except:
         pass
     finally:
