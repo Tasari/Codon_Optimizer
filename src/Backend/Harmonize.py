@@ -5,25 +5,25 @@ import re
 def score(codon, cg1, cg2, cg3):
     score = 0
     if (codon.bases[0] == 'G' or codon.bases[0] == 'C') and cg1 == 1:
-        score +=1
+        score += 1
     elif (codon.bases[0] == 'G' or codon.bases[0] == 'C') and cg1 == 0:
         pass
     elif (codon.bases[0] == 'G' or codon.bases[0] == 'C') and cg1 == -1:
-        score -=1
+        score -= 1
     if (codon.bases[1] == 'G' or codon.bases[1] == 'C') and cg2 == 1:
-        score +=1
+        score += 1
     elif (codon.bases[1] == 'G' or codon.bases[1] == 'C') and cg2 == 0:
         pass
     elif (codon.bases[1] == 'G' or codon.bases[1] == 'C') and cg2 == -1:
-        score -=1
+        score -= 1
     if (codon.bases[2] == 'G' or codon.bases[2] == 'C') and cg3 == 1:
-        score +=1
+        score += 1
     elif (codon.bases[2] == 'G' or codon.bases[2] == 'C') and cg3 == 0:
         pass
     elif (codon.bases[2] == 'G' or codon.bases[2] == 'C') and cg3 == -1:
-        score -=1
+        score -= 1
     if codon.frequencyper1000 < 10:
-        score -=1
+        score -= 1
     return score
 
 def get_best_codon_with_optimal_score(formatted_codon_bias, actual_cgcontent, target_cgcontent, aminoacid):
@@ -38,30 +38,30 @@ def get_best_codon_with_optimal_score(formatted_codon_bias, actual_cgcontent, ta
                 all_aa_codons[score(codon, cg1, cg2, cg3)].append(codon)
         best = -1
     for codon in all_aa_codons[max(all_aa_codons.keys())]:
-        if codon.frequencyper1000>best:
+        if codon.frequencyper1000 > best:
             best = codon.frequencyper1000
             best_codon = codon
     return best_codon
 
 def define_needed_cgs(actual_cgcontent, target_cgcontent):
     cg1, cg2, cg3 = 1, 1, 1
-    if target_cgcontent[1]-2 < actual_cgcontent[1] < target_cgcontent[1]+2:
-        cg1=0
-    elif actual_cgcontent[1] > target_cgcontent[1]+2:
-        cg1=-1
-    if target_cgcontent[2]-2 < actual_cgcontent[2] < target_cgcontent[2]+2:
+    if target_cgcontent[1] - 2 < actual_cgcontent[1] < target_cgcontent[1] + 2:
+        cg1 = 0
+    elif actual_cgcontent[1] > target_cgcontent[1] + 2:
+        cg1 =- 1
+    if target_cgcontent[2] - 2 < actual_cgcontent[2] < target_cgcontent[2] + 2:
         cg2=0 
     elif actual_cgcontent[2] > target_cgcontent[2]:
-        cg2=-1
-    if target_cgcontent[3]-2 < actual_cgcontent[3] < target_cgcontent[3]+2:
-        cg3=0
-    elif actual_cgcontent[3] > target_cgcontent[3]+2:
-        cg3=-1
+        cg2 =- 1
+    if target_cgcontent[3] - 2 < actual_cgcontent[3] < target_cgcontent[3] + 2:
+        cg3 = 0
+    elif actual_cgcontent[3] > target_cgcontent[3] + 2:
+        cg3 =- 1
     return (cg1, cg2, cg3)
 
 def replace_nth_codon(sequence, old, new, n):
     final_string = ''
-    counter=0
+    counter = 0
     codons = rewrite_sequence_to_codons(sequence)
     for codon in codons:
         if codon == old:
@@ -76,9 +76,17 @@ def replace_nth_codon(sequence, old, new, n):
     return final_string
 
 def Harmonize(sequence, formatted_codon_bias, spread=5):
-    target_cgcontent = calculateCGs(create_codon_bias_supersequence(formatted_codon_bias))
+    supersequence = create_codon_bias_supersequence(formatted_codon_bias)
+    target_cgcontent = calculateCGs(supersequence)
     for codon in get_most_frequent_codons(formatted_codon_bias).values():
         actual_cgcontent = calculateCGs(sequence)
-        prioritized_codon = get_best_codon_with_optimal_score(formatted_codon_bias, actual_cgcontent, target_cgcontent, codon.aminoacid)
-        sequence = replace_nth_codon(sequence, codon.bases, prioritized_codon.bases, spread)
+        prioritized_codon = get_best_codon_with_optimal_score(
+                                                    formatted_codon_bias, \
+                                                    actual_cgcontent, \
+                                                    target_cgcontent, \
+                                                    codon.aminoacid)
+        sequence = replace_nth_codon(sequence, \
+                                     codon.bases, \
+                                     prioritized_codon.bases, \
+                                     spread)
     return sequence

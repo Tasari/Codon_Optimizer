@@ -75,11 +75,13 @@ def limit_codon_bias_by_eliminating_rare_codons(formatted_codon_bias):
     all_aminoacids.sort()
     limited_codon_bias = []
     for codon in formatted_codon_bias:
-        if codon.frequencyper1000>10:
+        if codon.frequencyper1000 > 10:
             limited_codon_bias.append(codon)
-        elif codon.frequencyper1000<10 and any(x.aminoacid == codon.aminoacid for x in limited_codon_bias):
+        elif codon.frequencyper1000 < 10 \
+             and any(x.aminoacid == codon.aminoacid for x in limited_codon_bias):
             for x in limited_codon_bias:
-                if x.aminoacid == codon.aminoacid and x.frequencyper1000 < codon.frequencyper1000:
+                if x.aminoacid == codon.aminoacid \
+                   and x.frequencyper1000 < codon.frequencyper1000:
                     limited_codon_bias.remove(x)
                     limited_codon_bias.append(codon)
         else:

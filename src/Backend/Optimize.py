@@ -15,10 +15,13 @@ def create_checklist_board_list(checklist_board):
     checklist_board_list = []
     checklist_board_list.append(checklist_board.CAI_maximize_check.get())
     checklist_board_list.append(checklist_board.Harmonization_check.get())
-    checklist_board_list.append((checklist_board.Hidden_STOP_check.get(), checklist_board.get_hidden()))
+    checklist_board_list.append((checklist_board.Hidden_STOP_check.get(), \
+                                 checklist_board.get_hidden()))
     checklist_board_list.append(checklist_board.Repeat_remove_check.get())
-    checklist_board_list.append((checklist_board.Forbidden_sequences_check.get(), checklist_board.get_forbidden()))
-    checklist_board_list.append((checklist_board.Favored_sequences_check.get(), checklist_board.get_favored()))
+    checklist_board_list.append((checklist_board.Forbidden_sequences_check.get(), \
+                                 checklist_board.get_forbidden()))
+    checklist_board_list.append((checklist_board.Favored_sequences_check.get(), \
+                                 checklist_board.get_favored()))
     return checklist_board_list
 
 def front_optimize(codon_bias_entry, input_gene_entry, output_gene_entry, checklist_board, logs):
@@ -49,12 +52,12 @@ def optimize(formatted_codon_bias, input_gene_text, checklist_board_list):
     input_gene_text = input_gene_text.replace('T', 'U').replace('\n', '').upper()
     try:
         try:
-            assert(len(input_gene_text)%3==0)
+            assert(len(input_gene_text) % 3 == 0)
         except AssertionError:
             errors.append("Input Sequence is not dividable by 3")
             raise Exception
         try:
-            assert(len(formatted_codon_bias)==64)
+            assert(len(formatted_codon_bias) == 64)
         except AssertionError:
             errors.append("Not enough codons in table")
             raise Exception

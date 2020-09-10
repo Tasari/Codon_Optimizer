@@ -8,7 +8,7 @@ def create_potential_sequences(sequence):
     all_sequences = []
     all_bases = ['A', 'C', 'G', 'U']
     all_possibilities = []
-    if len(sequence)%3 != 0:
+    if len(sequence) % 3 != 0:
         prepared_sequences = prepare_sequences(sequence)
     else:
         prepared_sequences = [sequence]
@@ -25,7 +25,7 @@ def create_potential_sequences(sequence):
 def prepare_sequences(sequence):
     all_sequences = []
     all_bases = ['A', 'C', 'G', 'U'] 
-    if len(sequence)%3 == 1:
+    if len(sequence) % 3 == 1:
         all_possibilities = list(product(*[[sequence], all_bases, all_bases]))\
                           + list(product(*[all_bases, [sequence], all_bases]))\
                           + list(product(*[all_bases, all_bases, [sequence]]))
@@ -78,8 +78,8 @@ def build_gene_with_sequence(sequence, gene, formatted_codon_bias):
                                       formatted_codon_bias)
     occurance = find_sequence_in_gene(
                     rewrite_sequence_to_protein(best_sequence),
-                    rewrite_sequence_to_protein(gene))[0]*3
+                    rewrite_sequence_to_protein(gene))[0] * 3
     remade_sequence = gene[:occurance]
     remade_sequence += best_sequence
-    remade_sequence += gene[occurance+len(best_sequence):]
+    remade_sequence += gene[occurance + len(best_sequence):]
     return remade_sequence
