@@ -1,19 +1,38 @@
 import pytest
 from unittest.mock import Mock
-from src.Backend.Format_Codon_Bias import format_codon_bias, create_formatted_codon_bias_from_sequence, set_rare_codons
+from src.Backend.Format_Codon_Bias import (
+    format_codon_bias,
+    create_formatted_codon_bias_from_sequence,
+    set_rare_codons,
+)
 from src.Backend.Codon import Codon
 from src.Backend.CAI_calculation import calculate_CAI
 from src.Backend.Maximize_CAI import maximize_CAI
 from src.Backend.tools import *
 from src.Backend.Include_sequence import include_sequence
 from src.Backend.Calculate_CG import calculateCGs
-from src.Backend.Harmonize import score, get_best_codon_with_optimal_score, replace_nth_codon, Harmonize
-from src.Backend.remove_hidden_codons import create_hidden_codons, add_hidden_codons_to_forbidden
+from src.Backend.Harmonize import (
+    score,
+    get_best_codon_with_optimal_score,
+    replace_nth_codon,
+    Harmonize,
+)
+from src.Backend.remove_hidden_codons import (
+    create_hidden_codons,
+    add_hidden_codons_to_forbidden,
+)
 from src.Backend.Repetitive_bases_remover import add_repetitive_bases_to_forbidden
-from src.Backend.Forbid_sequence import forbid_sequences, eliminate_occurances_of_sequence, get_codons_based_on_aminoacid, check_if_sequences_in_forbidden, get_sequence_from_occurance_places, get_valid_sequence_lenght
+from src.Backend.Forbid_sequence import (
+    forbid_sequences,
+    eliminate_occurances_of_sequence,
+    get_codons_based_on_aminoacid,
+    check_if_sequences_in_forbidden,
+    get_sequence_from_occurance_places,
+    get_valid_sequence_lenght,
+)
 from src.Backend.Optimize import optimize
 
-initial_gene = '''
+initial_gene = """
 ATGAGGGGCATGAAGCTGCTGGGGGCGCTGCTGGCACTGGCGGCCCTACTGCAGGGGGCCGT
 GTCCCTGAAGATCGCAGCCTTCAACATCCAGACATTTGGGGAGACCAAGATGTCCAATGCCACCC
 TCGTCAGCTACATTGTGCAGATCCTGAGCCGCTATGACATCGCCCTGGTCCAGGAGGTCAGAGA
@@ -28,9 +47,9 @@ CTTCCAGTGGCTGATCCCCGACAGCGCTGACACCACAGCTACACCCACGCACTGTGCCTATGACA
 GGATCGTGGTTGCAGGGATGCTGCTCCGAGGCGCCGTTGTTCCCGACTCGGCTCTTCCCTTTAAC
 TTCCAGGCTGCCTATGGCCTGAGTGACCAACTGGCCCAAGCCATCAGTGACCACTATCCAGTGG
 AGGTGATGCTGAAGTGA
-'''
+"""
 
-initial_codon_bias_table = '''UUU  8.2(    15)  UCU  2.2(     4)  UAU 11.5(    21)  UGU  3.3(     6)
+initial_codon_bias_table = """UUU  8.2(    15)  UCU  2.2(     4)  UAU 11.5(    21)  UGU  3.3(     6)
 UUC 31.1(    57)  UCC 11.5(    21)  UAC 16.9(    31)  UGC  9.8(    18)
 UUA  0.5(     1)  UCA  2.2(     4)  UAA  0.5(     1)  UGA  2.2(     4)
 UUG 11.5(    21)  UCG 13.6(    25)  UAG  0.0(     0)  UGG 15.3(    28)
@@ -49,113 +68,213 @@ GUU 11.5(    21)  GCU  9.3(    17)  GAU 20.2(    37)  GGU 14.7(    27)
 GUC 42.6(    78)  GCC 46.9(    86)  GAC 30.6(    56)  GGC 46.4(    85)
 GUA  0.5(     1)  GCA 15.3(    28)  GAA 32.2(    59)  GGA 12.0(    22)
 GUG 22.9(    42)  GCG 37.6(    69)  GAG 31.6(    58)  GGG  9.3(    17)
-'''
+"""
+
 
 def test_set_rare_codons():
-    formatted = set_rare_codons([Codon('AAA', 0.0, 0, 'H')])
+    formatted = set_rare_codons([Codon("AAA", 0.0, 0, "H")])
     assert formatted[0].frequencyper1000 == 0.1
+
 
 def test_formatting_codon_bias():
     formatted_codon_bias = format_codon_bias(initial_codon_bias_table)
-    assert formatted_codon_bias[0].bases == 'UUU'
+    assert formatted_codon_bias[0].bases == "UUU"
     assert formatted_codon_bias[1].frequencyper1000 == 2.2
     assert formatted_codon_bias[2].amount == 21
 
+
 def test_formatting_sequence_to_codon_bias():
-    formatted_codon_bias = create_formatted_codon_bias_from_sequence('CGACGGAGG')
-    assert formatted_codon_bias[0].bases == 'CGA'
+    formatted_codon_bias = create_formatted_codon_bias_from_sequence("CGACGGAGG")
+    assert formatted_codon_bias[0].bases == "CGA"
     assert formatted_codon_bias[1].amount == 0
     assert formatted_codon_bias[2].frequencyper1000 == 0.1
 
+
 def test_CAI_calculation():
     formatted_codon_bias = format_codon_bias(initial_codon_bias_table)
-    assert(calculate_CAI('UUCUUCUUC', formatted_codon_bias) == 1)
-    assert(calculate_CAI('UUCUUCUUU', formatted_codon_bias) == 0.641)
+    assert calculate_CAI("UUCUUCUUC", formatted_codon_bias) == 1
+    assert calculate_CAI("UUCUUCUUU", formatted_codon_bias) == 0.641
+
 
 def test_CAI_maximalization():
     formatted_codon_bias = format_codon_bias(initial_codon_bias_table)
-    aminoacid_sequence = 'DADARAVE'
+    aminoacid_sequence = "DADARAVE"
     sequence = maximize_CAI(aminoacid_sequence, formatted_codon_bias)
-    assert(calculate_CAI(sequence, formatted_codon_bias) == 1)
+    assert calculate_CAI(sequence, formatted_codon_bias) == 1
+
 
 def test_rewriting():
-    assert(rewrite_sequence_to_protein('AUACUAGGC') == 'ILG')
-    assert(rewrite_sequence_to_codons('AUACUAGGC') == ['AUA', 'CUA', 'GGC'])
-    assert(rewrite_sequence_to_aminoacids('AUACUAGGC') == ['I', 'L', 'G'])
-    assert(rewrite_codons_to_sequence(['AUA', 'CUA', 'GGC']) == 'AUACUAGGC')
-    assert(rewrite_codons_to_protein(['AUA', 'CUA', 'GGC']) == 'ILG')
-    assert(rewrite_codons_to_aminoacids(['AUA', 'CUA', 'GGC']) == ['I', 'L', 'G'])
+    assert rewrite_sequence_to_protein("AUACUAGGC") == "ILG"
+    assert rewrite_sequence_to_codons("AUACUAGGC") == ["AUA", "CUA", "GGC"]
+    assert rewrite_sequence_to_aminoacids("AUACUAGGC") == ["I", "L", "G"]
+    assert rewrite_codons_to_sequence(["AUA", "CUA", "GGC"]) == "AUACUAGGC"
+    assert rewrite_codons_to_protein(["AUA", "CUA", "GGC"]) == "ILG"
+    assert rewrite_codons_to_aminoacids(["AUA", "CUA", "GGC"]) == ["I", "L", "G"]
+
 
 def test_get_most_frequent_codons():
-    assert(get_most_frequent_codons(format_codon_bias(initial_codon_bias_table))['P'].bases == 'CCG')
+    assert (
+        get_most_frequent_codons(format_codon_bias(initial_codon_bias_table))["P"].bases
+        == "CCG"
+    )
+
 
 def test_find_sequence_in_gene():
-    assert(find_sequence_in_gene('A', 'AAACAG') == [0, 1, 2, 4])
-    assert(find_sequence_in_gene('AA', 'AAACAG') == [0])
+    assert find_sequence_in_gene("A", "AAACAG") == [0, 1, 2, 4]
+    assert find_sequence_in_gene("AA", "AAACAG") == [0]
+
 
 def test_supersequence_creation():
-    assert(create_codon_bias_supersequence(format_codon_bias('UUA  0.5(     1)  UCA  2.2(     4)')) == 'UUAUCAUCAUCAUCA') 
+    assert (
+        create_codon_bias_supersequence(
+            format_codon_bias("UUA  0.5(     1)  UCA  2.2(     4)")
+        )
+        == "UUAUCAUCAUCAUCA"
+    )
+
 
 def test_include_sequence():
-    assert(include_sequence(['CGC'], 'CCCCCCCCUCCA', format_codon_bias(initial_codon_bias_table)) == 'CCGCCGCCUCCA')
-    assert(include_sequence(['CCCC'], 'CCACCGCCUCCA', format_codon_bias(initial_codon_bias_table)) == 'CCCCCGCCUCCA')
-    assert(include_sequence(['CCCGC'], 'CCACCGCCUCCA', format_codon_bias(initial_codon_bias_table)) == 'CCCCCGCCGCCA')
+    assert (
+        include_sequence(
+            ["CGC"], "CCCCCCCCUCCA", format_codon_bias(initial_codon_bias_table)
+        )
+        == "CCGCCGCCUCCA"
+    )
+    assert (
+        include_sequence(
+            ["CCCC"], "CCACCGCCUCCA", format_codon_bias(initial_codon_bias_table)
+        )
+        == "CCCCCGCCUCCA"
+    )
+    assert (
+        include_sequence(
+            ["CCCGC"], "CCACCGCCUCCA", format_codon_bias(initial_codon_bias_table)
+        )
+        == "CCCCCGCCGCCA"
+    )
+
 
 def test_cg_calculation():
-    assert(calculateCGs('CGATATTGATCT')== (4/12*100, 1/4*100, 3/4*100, 0/4*100))
+    assert calculateCGs("CGATATTGATCT") == (
+        4 / 12 * 100,
+        1 / 4 * 100,
+        3 / 4 * 100,
+        0 / 4 * 100,
+    )
+
 
 def test_cg_score():
     codon = Mock()
-    codon.bases = 'CGA'
+    codon.bases = "CGA"
     codon.frequencyper1000 = 15
-    assert(score(codon, 1, 1, 1) == 2)
-    assert(score(codon, 1, 0, 1) == 1)
-    assert(score(codon, 1, -1, 1) == 0)
-    assert(score(codon, 0, 0, -1) == 0)
-    codon.frequencyper1000 = 9    
-    assert(score(codon, 1, 1, 1) == 1)
+    assert score(codon, 1, 1, 1) == 2
+    assert score(codon, 1, 0, 1) == 1
+    assert score(codon, 1, -1, 1) == 0
+    assert score(codon, 0, 0, -1) == 0
+    codon.frequencyper1000 = 9
+    assert score(codon, 1, 1, 1) == 1
+
 
 def test_get_best_codon_with_optimal_score():
-    assert(get_best_codon_with_optimal_score(format_codon_bias(initial_codon_bias_table), [48.2, 14.5, 13.2, 33.3], [42.2, 12.5, 10.1, 21.5], 'I').bases == 'AUU')
+    assert (
+        get_best_codon_with_optimal_score(
+            format_codon_bias(initial_codon_bias_table),
+            [48.2, 14.5, 13.2, 33.3],
+            [42.2, 12.5, 10.1, 21.5],
+            "I",
+        ).bases
+        == "AUU"
+    )
+
 
 def test_replace_nth_codon():
-    assert(replace_nth_codon('ACCACCACCACC', 'ACC', 'ACG', 2) == 'ACCACGACCACG')
+    assert replace_nth_codon("ACCACCACCACC", "ACC", "ACG", 2) == "ACCACGACCACG"
+
 
 def test_harmonize():
-    assert(Harmonize('ATGAGGGGCATGAAGCTGCTGGGGGCGCTGCTGGCACTGGCGGCCCTACTGCAGGGGGCCGTGTCCCTGAAGATCGCAGCC', format_codon_bias(initial_codon_bias_table), 3) == 'ATGAGGGGCATGAAGCTGCTGGGGGCGCTGCTGGCACTGGCGGCCCTACTGCAGGGGGCCGTGTCCCTGAAGATCGCAGCA')
+    assert (
+        Harmonize(
+            "ATGAGGGGCATGAAGCTGCTGGGGGCGCTGCTGGCACTGGCGGCCCTACTGCAGGGGGCCGTGTCCCTGAAGATCGCAGCC",
+            format_codon_bias(initial_codon_bias_table),
+            3,
+        )
+        == "ATGAGGGGCATGAAGCTGCTGGGGGCGCTGCTGGCACTGGCGGCCCTACTGCAGGGGGCCGTGTCCCTGAAGATCGCAGCA"
+    )
+
 
 def test_hidden_codons_creation():
-    assert(create_hidden_codons('ATG').sort() == ['ATAG', 'ATTG', 'ATCG', 'ATGG', 'AATG', 'ACTG', 'AGTG'].sort())
+    assert (
+        create_hidden_codons("ATG").sort()
+        == ["ATAG", "ATTG", "ATCG", "ATGG", "AATG", "ACTG", "AGTG"].sort()
+    )
+
 
 def test_adding_hidden_to_forbidden():
-    assert(add_hidden_codons_to_forbidden([], ['ACC']).sort() == ['ACCC', 'ATCC', 'AACC', 'ACTC', 'AGCC', 'ACGC', 'ACAC'].sort())
+    assert (
+        add_hidden_codons_to_forbidden([], ["ACC"]).sort()
+        == ["ACCC", "ATCC", "AACC", "ACTC", "AGCC", "ACGC", "ACAC"].sort()
+    )
+
 
 def test_adding_repetitive_bases_to_forbidden():
-    assert(add_repetitive_bases_to_forbidden([], 5) == ['AAAAA', 'CCCCC', 'GGGGG', 'TTTTT'])    
+    assert add_repetitive_bases_to_forbidden([], 5) == [
+        "AAAAA",
+        "CCCCC",
+        "GGGGG",
+        "TTTTT",
+    ]
+
 
 def test_forbidding_sequence():
-    forbid_start = 'AAAAAAAAAAAACCCCCCCCC'
+    forbid_start = "AAAAAAAAAAAACCCCCCCCC"
     forbidden_protein = rewrite_sequence_to_protein(forbid_start)
-    new_sequence = forbid_sequences(['AAA', 'CCC'], 'AAAAAAAAAAAACCCCCCCCC', format_codon_bias(initial_codon_bias_table))
-    assert(find_sequence_in_gene('AAA', new_sequence) == [])
-    assert(find_sequence_in_gene('CCC', new_sequence) == [])
-    assert(forbidden_protein == rewrite_sequence_to_protein(new_sequence))
+    new_sequence = forbid_sequences(
+        ["AAA", "CCC"],
+        "AAAAAAAAAAAACCCCCCCCC",
+        format_codon_bias(initial_codon_bias_table),
+    )
+    assert find_sequence_in_gene("AAA", new_sequence) == []
+    assert find_sequence_in_gene("CCC", new_sequence) == []
+    assert forbidden_protein == rewrite_sequence_to_protein(new_sequence)
+
 
 def test_eliminating_occurances():
-    assert(eliminate_occurances_of_sequence('AAGAAGAAGAAG', ['AAA', 'AAG'], 3, format_codon_bias(initial_codon_bias_table))[1] == 0)
-    
+    assert (
+        eliminate_occurances_of_sequence(
+            "AAGAAGAAGAAG",
+            ["AAA", "AAG"],
+            3,
+            format_codon_bias(initial_codon_bias_table),
+        )[1]
+        == 0
+    )
+
+
 def test_get_codons_based_on_aminoacid():
-    assert(get_codons_based_on_aminoacid(['I', 'M'], format_codon_bias(initial_codon_bias_table)) ==  [['AUU', 'AUC', 'AUA'], ['AUG']])
+    assert get_codons_based_on_aminoacid(
+        ["I", "M"], format_codon_bias(initial_codon_bias_table)
+    ) == [["AUU", "AUC", "AUA"], ["AUG"]]
+
 
 def test_get_valid_lenght():
-    assert(get_valid_sequence_lenght('ACAT') == 6)
-    assert(get_valid_sequence_lenght('ACA') == 3)
+    assert get_valid_sequence_lenght("ACAT") == 6
+    assert get_valid_sequence_lenght("ACA") == 3
+
 
 def test_get_sequence_from_occurance_places():
-    assert(get_sequence_from_occurance_places('AAACCCGGGTTT', 2, 3) == (0, 6))
+    assert get_sequence_from_occurance_places("AAACCCGGGTTT", 2, 3) == (0, 6)
+
 
 def test_check_if_in_forbidden():
-    assert(check_if_sequences_in_forbidden('AAA', ['CAC', 'AAA']) == 1)
+    assert check_if_sequences_in_forbidden("AAA", ["CAC", "AAA"]) == 1
+
 
 def test_optimize():
-    assert(optimize(format_codon_bias(initial_codon_bias_table), 'ATGAGGGGCATGAAGCTGCTGGGGGCGCTGCTGGCACTGGCGGCCCTACTGCAGGGGGCCGTG', [1, 1, (1, ['ACG']), 1, (1, ['UUA']), (1, ['AUA'])]) == 'ATGCGGGGCATGAAGCTGCTGGGCGCCCTGCTGGCCCTTGCCGCCCTGCTGCAGGGCGCAGTC')
+    assert (
+        optimize(
+            format_codon_bias(initial_codon_bias_table),
+            "ATGAGGGGCATGAAGCTGCTGGGGGCGCTGCTGGCACTGGCGGCCCTACTGCAGGGGGCCGTG",
+            [1, 1, (1, ["ACG"]), 1, (1, ["UUA"]), (1, ["AUA"])],
+        )
+        == "ATGCGGGGCATGAAGCTGCTGGGCGCCCTGCTGGCCCTTGCCGCCCTGCTGCAGGGCGCAGTC"
+    )
