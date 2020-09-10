@@ -44,9 +44,7 @@ def get_best_codon_with_optimal_score(formatted_codon_bias, actual_cgcontent, ta
     return best_codon
 
 def define_needed_cgs(actual_cgcontent, target_cgcontent):
-    cg1=1
-    cg2=1
-    cg3=1
+    cg1, cg2, cg3 = 1, 1, 1
     if target_cgcontent[1]-2 < actual_cgcontent[1] < target_cgcontent[1]+2:
         cg1=0
     elif actual_cgcontent[1] > target_cgcontent[1]+2:
