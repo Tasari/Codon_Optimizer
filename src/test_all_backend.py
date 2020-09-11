@@ -84,9 +84,9 @@ def test_formatting_codon_bias():
 
 
 def test_formatting_sequence_to_codon_bias():
-    formatted_codon_bias = create_formatted_codon_bias_from_sequence("CGACGGAGG")
-    assert formatted_codon_bias[0].bases == "CGA"
-    assert formatted_codon_bias[1].amount == 0
+    formatted_codon_bias = create_formatted_codon_bias_from_sequence("ATCAUCAUC")
+    assert formatted_codon_bias[0].bases == "AUA"
+    assert formatted_codon_bias[1].amount == 3
     assert formatted_codon_bias[2].frequencyper1000 == 0.1
 
 

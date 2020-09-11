@@ -41,32 +41,23 @@ def format_codon_bias(codon_bias_table):
     return codons
 
 
+def count_codons(sequence):
+    codon_counts = {}
+    for key in codon_to_aminoacid.keys():
+        codon_counts[key] = 0
+    for codon in rewrite_sequence_to_codons(sequence):
+        codon_counts[codon] += 1
+    return codon_counts
+
+
 def create_formatted_codon_bias_from_sequence(sequence):
     codons = []
-    codon_counts = {
-        "CGA": 0,"CGC": 0,"CGG": 0,"CGU": 0,"AGA": 0,"AGG": 0,"CUA": 0,
-        "CUC": 0,"CUG": 0,"CUU": 0,"UUA": 0,"UUG": 0,"UCA": 0,"UCC": 0,
-        "UCG": 0,"UCU": 0,"AGC": 0,"AGU": 0,"ACA": 0,"ACC": 0,"ACG": 0,
-        "ACU": 0,"CCA": 0,"CCC": 0,"CCG": 0,"CCU": 0,"GCA": 0,"GCC": 0,
-        "GCG": 0,"GCU": 0,"GGA": 0,"GGC": 0,"GGG": 0,"GGU": 0,"GUA": 0,
-        "GUC": 0,"GUG": 0,"GUU": 0,"AAA": 0,"AAG": 0,"AAC": 0,"AAU": 0,
-        "CAA": 0,"CAG": 0,"CAC": 0,"CAU": 0,"GAA": 0,"GAG": 0,"GAC": 0,
-        "GAU": 0,"UAC": 0,"UAU": 0,"UGC": 0,"UGU": 0,"UUC": 0,"UUU": 0,
-        "AUA": 0,"AUC": 0,"AUU": 0,"AUG": 0,"UGG": 0,"UAA": 0,"UAG": 0,
-        "UGA": 0,
-    }
-    whitelisted_sequence = change_sequence_to_use_only_bases_letters(sequence)
-    try:
-        assert len(whitelisted_sequence) % 3 == 0
-    except AssertionError:
-        errors.append("Representative sequences are not dividable by 3")
-        raise Exception
-    for codon in rewrite_sequence_to_codons(whitelisted_sequence):
-        codon_counts[codon] += 1
+    sequence = change_sequence_to_use_only_bases_letters(sequence)
+    codon_counts = count_codons(sequence)
     for key, value in codon_counts.items():
         codon_frequency = round(
             float(
-                value * (len(rewrite_sequence_to_codons(whitelisted_sequence)) / 1000)
+                value * (len(rewrite_sequence_to_codons(sequence)) / 1000)
             ),
             1,
         )
@@ -80,6 +71,11 @@ def change_sequence_to_use_only_bases_letters(sequence):
     whitelisted_sequence = "".join(
         [char for char in rewrite_to_rna(sequence) if char in whitelist]
     )
+    try:
+        assert len(whitelisted_sequence) % 3 == 0
+    except AssertionError:
+        errors.append("Representative sequences are not dividable by 3")
+        raise Exception
     return whitelisted_sequence
 
 
