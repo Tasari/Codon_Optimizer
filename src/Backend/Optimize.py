@@ -15,29 +15,6 @@ from .tools import create_codon_bias_supersequence
 from ..logs import errors, failed_forbidding
 
 
-def create_checklist_board_list(checklist_board):
-    checklist_board_list = []
-    checklist_board_list.append(checklist_board.CAI_maximize_check.get())
-    checklist_board_list.append(checklist_board.Harmonization_check.get())
-    checklist_board_list.append(
-        (checklist_board.Hidden_STOP_check.get(), checklist_board.get_hidden())
-    )
-    checklist_board_list.append(checklist_board.Repeat_remove_check.get())
-    checklist_board_list.append(
-        (
-            checklist_board.Forbidden_sequences_check.get(),
-            checklist_board.get_forbidden(),
-        )
-    )
-    checklist_board_list.append(
-        (
-            checklist_board.Favored_sequences_check.get(), 
-            checklist_board.get_favored()
-        )
-    )
-    return checklist_board_list
-
-
 def front_optimize(
     codon_bias_entry, input_gene_entry, output_gene_entry, checklist_board, logs
 ):
@@ -68,6 +45,29 @@ def front_optimize(
         logs.add_errors(errors)
         errors.clear()
         failed_forbidding.clear()
+
+
+def create_checklist_board_list(checklist_board):
+    checklist_board_list = []
+    checklist_board_list.append(checklist_board.CAI_maximize_check.get())
+    checklist_board_list.append(checklist_board.Harmonization_check.get())
+    checklist_board_list.append(
+        (checklist_board.Hidden_STOP_check.get(), checklist_board.get_hidden())
+    )
+    checklist_board_list.append(checklist_board.Repeat_remove_check.get())
+    checklist_board_list.append(
+        (
+            checklist_board.Forbidden_sequences_check.get(),
+            checklist_board.get_forbidden(),
+        )
+    )
+    checklist_board_list.append(
+        (
+            checklist_board.Favored_sequences_check.get(), 
+            checklist_board.get_favored()
+        )
+    )
+    return checklist_board_list
 
 
 def optimize(formatted_codon_bias, input_gene_text, checklist_board_list):

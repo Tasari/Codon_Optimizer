@@ -10,13 +10,6 @@ from .CAI_calculation import calculate_CAI
 from ..logs import errors, failed_forbidding
 
 
-def check_if_sequences_in_forbidden(sequence, all_forbidden_sequences):
-    for forbidden in all_forbidden_sequences:
-        if find_sequence_in_gene(forbidden, sequence) != []:
-            return 1
-    return 0
-
-
 def add_forbid_sequences_to_all(all_forbidden_sequences, new_forbidden):
     for sequence in new_forbidden:
         if sequence != "":
@@ -24,19 +17,28 @@ def add_forbid_sequences_to_all(all_forbidden_sequences, new_forbidden):
     return all_forbidden_sequences
 
 
-def get_sequence_from_occurance_places(input_gene, occurance, lenght):
-    if occurance % 3 == 0:
-        start = occurance - 3
-    elif occurance % 3 == 1:
-        start = occurance - 1 - 3
-    else:
-        start = occurance - 2 - 3
-    if start < 0:
-        start = 0
-    end = start + lenght + 3
-    if end > len(input_gene):
-        end = len(input_gene)
-    return (start, end)
+def forbid_sequences(all_forbidden_sequences, input_string, formatted_codon_bias_table):
+    final_sequence = input_string
+    still_found = 0
+    if all_forbidden_sequences != []:
+        all_forbidden_sequences = list(
+            dict.fromkeys(sorted(all_forbidden_sequences, key=len))
+        )
+        still_found = 1
+        for number, sequence in enumerate(all_forbidden_sequences):
+            all_forbidden_sequences[number] = rewrite_to_rna(sequence)
+    while still_found:
+        done_sequences = []
+        for sequence in all_forbidden_sequences:
+            lenght = get_valid_sequence_lenght(
+                all_forbidden_sequences[len(all_forbidden_sequences) - 1]
+            )
+            done_sequences.append(sequence)
+            final_sequence, still_found = eliminate_occurances_of_sequence(
+                final_sequence, done_sequences, lenght, formatted_codon_bias_table
+            )
+    errors.append("Failed to eliminate sequeces: {}".format(failed_forbidding))
+    return final_sequence
 
 
 def get_valid_sequence_lenght(sequence):
@@ -48,44 +50,25 @@ def get_valid_sequence_lenght(sequence):
     return lenght
 
 
-def get_codons_based_on_aminoacid(aminoacids, formatted_codon_bias_table):
-    sequence = []
-    for aminoacid in aminoacids:
-        list_of_coding_codons = []
-        for codon in formatted_codon_bias_table:
-            if codon.aminoacid == aminoacid:
-                list_of_coding_codons.append(codon.bases)
-        sequence.append(list_of_coding_codons)
-    return sequence
-
-
-def change_sequence_to_eliminate_one_occurance(
-    input_string, done_sequences, formatted_codon_bias_table, pre="", post=""
+def eliminate_occurances_of_sequence(
+    final_sequence, done_sequences, lenght, formatted_codon_bias_table
 ):
-    aminoacids = rewrite_sequence_to_aminoacids(input_string)
-    possible_codons_list = get_codons_based_on_aminoacid(
-        aminoacids, formatted_codon_bias_table
+    sequence = done_sequences[-1]
+    all_occurances_of_sequence = find_sequence_in_gene(sequence, final_sequence)
+    new_sequence = ""
+    new_sequence, failed, end = change_sequence_to_eliminate_multiple_occurances(
+        all_occurances_of_sequence,
+        final_sequence,
+        done_sequences,
+        lenght,
+        formatted_codon_bias_table,
     )
-    all_possibilities = [
-        rewrite_codons_to_sequence(x) for x in product(*possible_codons_list)
-    ]
-    good_possibilities = []
-    for possibility in all_possibilities:
-        if not check_if_sequences_in_forbidden(
-            pre + possibility + post, done_sequences
-        ):
-            good_possibilities.append(possibility)
-    if not len(good_possibilities):
-        return input_string, 1
-    best = (0, "")
-    for possibility in good_possibilities:
-        calculated = (
-            calculate_CAI(possibility, formatted_codon_bias_table),
-            possibility,
-        )
-        if calculated[0] > best[0]:
-            best = calculated
-    return best[1], 0
+    new_sequence += final_sequence[end:]
+    if all_occurances_of_sequence != []:
+        final_sequence = new_sequence
+    if find_sequence_in_gene(sequence, final_sequence) != [] and not failed:
+        return final_sequence, 1
+    return final_sequence, 0
 
 
 def change_sequence_to_eliminate_multiple_occurances(
@@ -121,46 +104,63 @@ def change_sequence_to_eliminate_multiple_occurances(
     return new_sequence, failed, begin
 
 
-def eliminate_occurances_of_sequence(
-    final_sequence, done_sequences, lenght, formatted_codon_bias_table
+def get_sequence_from_occurance_places(input_gene, occurance, lenght):
+    if occurance % 3 == 0:
+        start = occurance - 3
+    elif occurance % 3 == 1:
+        start = occurance - 1 - 3
+    else:
+        start = occurance - 2 - 3
+    if start < 0:
+        start = 0
+    end = start + lenght + 3
+    if end > len(input_gene):
+        end = len(input_gene)
+    return (start, end)
+
+
+def change_sequence_to_eliminate_one_occurance(
+    input_string, done_sequences, formatted_codon_bias_table, pre="", post=""
 ):
-    sequence = done_sequences[-1]
-    all_occurances_of_sequence = find_sequence_in_gene(sequence, final_sequence)
-    new_sequence = ""
-    new_sequence, failed, end = change_sequence_to_eliminate_multiple_occurances(
-        all_occurances_of_sequence,
-        final_sequence,
-        done_sequences,
-        lenght,
-        formatted_codon_bias_table,
+    aminoacids = rewrite_sequence_to_aminoacids(input_string)
+    possible_codons_list = get_codons_based_on_aminoacid(
+        aminoacids, formatted_codon_bias_table
     )
-    new_sequence += final_sequence[end:]
-    if all_occurances_of_sequence != []:
-        final_sequence = new_sequence
-    if find_sequence_in_gene(sequence, final_sequence) != [] and not failed:
-        return final_sequence, 1
-    return final_sequence, 0
-
-
-def forbid_sequences(all_forbidden_sequences, input_string, formatted_codon_bias_table):
-    final_sequence = input_string
-    still_found = 0
-    if all_forbidden_sequences != []:
-        all_forbidden_sequences = list(
-            dict.fromkeys(sorted(all_forbidden_sequences, key=len))
+    all_possibilities = [
+        rewrite_codons_to_sequence(x) for x in product(*possible_codons_list)
+    ]
+    good_possibilities = []
+    for possibility in all_possibilities:
+        if not check_if_sequences_in_forbidden(
+            pre + possibility + post, done_sequences
+        ):
+            good_possibilities.append(possibility)
+    if not len(good_possibilities):
+        return input_string, 1
+    best = (0, "")
+    for possibility in good_possibilities:
+        calculated = (
+            calculate_CAI(possibility, formatted_codon_bias_table),
+            possibility,
         )
-        still_found = 1
-        for number, sequence in enumerate(all_forbidden_sequences):
-            all_forbidden_sequences[number] = rewrite_to_rna(sequence)
-    while still_found:
-        done_sequences = []
-        for sequence in all_forbidden_sequences:
-            lenght = get_valid_sequence_lenght(
-                all_forbidden_sequences[len(all_forbidden_sequences) - 1]
-            )
-            done_sequences.append(sequence)
-            final_sequence, still_found = eliminate_occurances_of_sequence(
-                final_sequence, done_sequences, lenght, formatted_codon_bias_table
-            )
-    errors.append("Failed to eliminate sequeces: {}".format(failed_forbidding))
-    return final_sequence
+        if calculated[0] > best[0]:
+            best = calculated
+    return best[1], 0
+
+
+def get_codons_based_on_aminoacid(aminoacids, formatted_codon_bias_table):
+    sequence = []
+    for aminoacid in aminoacids:
+        list_of_coding_codons = []
+        for codon in formatted_codon_bias_table:
+            if codon.aminoacid == aminoacid:
+                list_of_coding_codons.append(codon.bases)
+        sequence.append(list_of_coding_codons)
+    return sequence
+
+
+def check_if_sequences_in_forbidden(sequence, all_forbidden_sequences):
+    for forbidden in all_forbidden_sequences:
+        if find_sequence_in_gene(forbidden, sequence) != []:
+            return 1
+    return 0

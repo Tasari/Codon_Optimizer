@@ -41,13 +41,11 @@ def format_codon_bias(codon_bias_table):
     return codons
 
 
-def count_codons(sequence):
-    codon_counts = {}
-    for key in codon_to_aminoacid.keys():
-        codon_counts[key] = 0
-    for codon in rewrite_sequence_to_codons(sequence):
-        codon_counts[codon] += 1
-    return codon_counts
+def set_rare_codons(formatted_codon_bias, minimal_frequency=0.1):
+    for codon in formatted_codon_bias:
+        if codon.frequencyper1000 < minimal_frequency:
+            codon.frequencyper1000 = minimal_frequency
+    return formatted_codon_bias
 
 
 def create_formatted_codon_bias_from_sequence(sequence):
@@ -79,8 +77,11 @@ def change_sequence_to_use_only_bases_letters(sequence):
     return whitelisted_sequence
 
 
-def set_rare_codons(formatted_codon_bias, minimal_frequency=0.1):
-    for codon in formatted_codon_bias:
-        if codon.frequencyper1000 < minimal_frequency:
-            codon.frequencyper1000 = minimal_frequency
-    return formatted_codon_bias
+def count_codons(sequence):
+    codon_counts = {}
+    for key in codon_to_aminoacid.keys():
+        codon_counts[key] = 0
+    for codon in rewrite_sequence_to_codons(sequence):
+        codon_counts[codon] += 1
+    return codon_counts
+

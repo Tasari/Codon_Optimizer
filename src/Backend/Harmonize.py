@@ -7,29 +7,18 @@ from .tools import (
 import re
 
 
-def score(codon, cg1, cg2, cg3):
-    score = 0
-    if (codon.bases[0] == "G" or codon.bases[0] == "C") and cg1 == 1:
-        score += 1
-    elif (codon.bases[0] == "G" or codon.bases[0] == "C") and cg1 == 0:
-        pass
-    elif (codon.bases[0] == "G" or codon.bases[0] == "C") and cg1 == -1:
-        score -= 1
-    if (codon.bases[1] == "G" or codon.bases[1] == "C") and cg2 == 1:
-        score += 1
-    elif (codon.bases[1] == "G" or codon.bases[1] == "C") and cg2 == 0:
-        pass
-    elif (codon.bases[1] == "G" or codon.bases[1] == "C") and cg2 == -1:
-        score -= 1
-    if (codon.bases[2] == "G" or codon.bases[2] == "C") and cg3 == 1:
-        score += 1
-    elif (codon.bases[2] == "G" or codon.bases[2] == "C") and cg3 == 0:
-        pass
-    elif (codon.bases[2] == "G" or codon.bases[2] == "C") and cg3 == -1:
-        score -= 1
-    if codon.frequencyper1000 < 10:
-        score -= 1
-    return score
+def Harmonize(sequence, formatted_codon_bias, spread=5):
+    supersequence = create_codon_bias_supersequence(formatted_codon_bias)
+    target_cgcontent = calculateCGs(supersequence)
+    for codon in get_most_frequent_codons(formatted_codon_bias).values():
+        actual_cgcontent = calculateCGs(sequence)
+        prioritized_codon = get_best_codon_with_optimal_score(
+            formatted_codon_bias, actual_cgcontent, target_cgcontent, codon.aminoacid
+        )
+        sequence = replace_nth_codon(
+            sequence, codon.bases, prioritized_codon.bases, spread
+        )
+    return sequence
 
 
 def get_best_codon_with_optimal_score(
@@ -69,6 +58,31 @@ def define_needed_cgs(actual_cgcontent, target_cgcontent):
     return (cg1, cg2, cg3)
 
 
+def score(codon, cg1, cg2, cg3):
+    score = 0
+    if (codon.bases[0] == "G" or codon.bases[0] == "C") and cg1 == 1:
+        score += 1
+    elif (codon.bases[0] == "G" or codon.bases[0] == "C") and cg1 == 0:
+        pass
+    elif (codon.bases[0] == "G" or codon.bases[0] == "C") and cg1 == -1:
+        score -= 1
+    if (codon.bases[1] == "G" or codon.bases[1] == "C") and cg2 == 1:
+        score += 1
+    elif (codon.bases[1] == "G" or codon.bases[1] == "C") and cg2 == 0:
+        pass
+    elif (codon.bases[1] == "G" or codon.bases[1] == "C") and cg2 == -1:
+        score -= 1
+    if (codon.bases[2] == "G" or codon.bases[2] == "C") and cg3 == 1:
+        score += 1
+    elif (codon.bases[2] == "G" or codon.bases[2] == "C") and cg3 == 0:
+        pass
+    elif (codon.bases[2] == "G" or codon.bases[2] == "C") and cg3 == -1:
+        score -= 1
+    if codon.frequencyper1000 < 10:
+        score -= 1
+    return score
+
+
 def replace_nth_codon(sequence, old, new, n):
     final_string = ""
     counter = 0
@@ -84,17 +98,3 @@ def replace_nth_codon(sequence, old, new, n):
         else:
             final_string += codon
     return final_string
-
-
-def Harmonize(sequence, formatted_codon_bias, spread=5):
-    supersequence = create_codon_bias_supersequence(formatted_codon_bias)
-    target_cgcontent = calculateCGs(supersequence)
-    for codon in get_most_frequent_codons(formatted_codon_bias).values():
-        actual_cgcontent = calculateCGs(sequence)
-        prioritized_codon = get_best_codon_with_optimal_score(
-            formatted_codon_bias, actual_cgcontent, target_cgcontent, codon.aminoacid
-        )
-        sequence = replace_nth_codon(
-            sequence, codon.bases, prioritized_codon.bases, spread
-        )
-    return sequence
