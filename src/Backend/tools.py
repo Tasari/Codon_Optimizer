@@ -45,9 +45,9 @@ def rewrite_codons_to_aminoacids(codons):
     return aminoacids
 
 
-def get_most_frequent_codons(formatted_codon_bias_table):
+def get_most_frequent_codons(formatted_codons):
     optimal_codon = {}
-    for codon in formatted_codon_bias_table:
+    for codon in formatted_codons:
         if codon.aminoacid not in optimal_codon.keys():
             optimal_codon[codon.aminoacid] = codon
         elif optimal_codon[codon.aminoacid].frequencyper1000 < codon.frequencyper1000:
@@ -63,8 +63,8 @@ def find_sequence_in_gene(sequence, gene):
     return found_indexes
 
 
-def create_codon_bias_supersequence(formatted_codon_bias_table):
+def create_codon_bias_supersequence(formatted_codons):
     superstring = ""
-    for codon in formatted_codon_bias_table:
+    for codon in formatted_codons:
         superstring += codon.bases * codon.amount
     return superstring

@@ -14,12 +14,10 @@ Genetic optimizer is tool for gene optimalization
 ## TODO ##
 
 - Bugcatching
-- Tests
 - Refactoring
 
 ### Optional ###
 
-- Enabling usage of sequences instead of codon bias table
 - Bigger control for user
 - Citations
 

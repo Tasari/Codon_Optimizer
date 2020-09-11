@@ -2,7 +2,7 @@ from math import exp, fsum, log
 from .tools import get_most_frequent_codons, rewrite_sequence_to_codons
 
 
-def calculate_CAI(data, formatted_codon_bias_table):
+def calculate_CAI(data, formatted_codons):
     """Calculates and returns calculated CAI score.
 
     Collects ratio of each codon frequency/most frequent codon 
@@ -11,16 +11,16 @@ def calculate_CAI(data, formatted_codon_bias_table):
     
     Args:
         data: Sequence which CAI we want to calculate.
-        formatted_codon_bias_table: List of formatted codons.
+        formatted_codons: List of formatted codons.
 
     Returns:
         Float CAI score, CAI = 1 is max, when all codons 
         are most frequent ones.
     """
     to_count = []
-    codon_freq_aa = reformat_table_codon_freq_aa(formatted_codon_bias_table)
+    codon_freq_aa = reformat_table_codon_freq_aa(formatted_codons)
     forbidden = ["UGG", "AUG", "UAA", "UGA", "UAG"]
-    most_freq_codons = get_most_frequent_codons(formatted_codon_bias_table)
+    most_freq_codons = get_most_frequent_codons(formatted_codons)
     for codon in rewrite_sequence_to_codons(data):
         if codon in forbidden:
             continue

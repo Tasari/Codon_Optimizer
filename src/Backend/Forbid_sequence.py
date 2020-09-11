@@ -11,13 +11,14 @@ from ..logs import errors, failed_forbidding
 
 
 def add_forbid_sequences_to_all(all_forbidden_sequences, new_forbidden):
+    """Adds list of sequences given into all forbidden sequences"""
     for sequence in new_forbidden:
         if sequence != "":
             all_forbidden_sequences.append(sequence)
     return all_forbidden_sequences
 
 
-def forbid_sequences(all_forbidden_sequences, input_string, formatted_codon_bias_table):
+def forbid_sequences(all_forbidden_sequences, input_string, formatted_codons):
     final_sequence = input_string
     still_found = 0
     if all_forbidden_sequences != []:
@@ -35,7 +36,7 @@ def forbid_sequences(all_forbidden_sequences, input_string, formatted_codon_bias
             )
             done_sequences.append(sequence)
             final_sequence, still_found = eliminate_occurances_of_sequence(
-                final_sequence, done_sequences, lenght, formatted_codon_bias_table
+                final_sequence, done_sequences, lenght, formatted_codons
             )
     errors.append("Failed to eliminate sequeces: {}".format(failed_forbidding))
     return final_sequence
@@ -51,7 +52,7 @@ def get_valid_sequence_lenght(sequence):
 
 
 def eliminate_occurances_of_sequence(
-    final_sequence, done_sequences, lenght, formatted_codon_bias_table
+    final_sequence, done_sequences, lenght, formatted_codons
 ):
     sequence = done_sequences[-1]
     all_occurances_of_sequence = find_sequence_in_gene(sequence, final_sequence)
@@ -61,7 +62,7 @@ def eliminate_occurances_of_sequence(
         final_sequence,
         done_sequences,
         lenght,
-        formatted_codon_bias_table,
+        formatted_codons,
     )
     new_sequence += final_sequence[end:]
     if all_occurances_of_sequence != []:
@@ -76,7 +77,7 @@ def change_sequence_to_eliminate_multiple_occurances(
     final_sequence,
     done_sequences,
     lenght,
-    formatted_codon_bias_table,
+    formatted_codons,
 ):
     begin = 0
     new_sequence = ""
@@ -90,10 +91,10 @@ def change_sequence_to_eliminate_multiple_occurances(
             begin = sequence_range[0]
             new_sequence = new_sequence[:begin]
         new_sequence += final_sequence[begin : sequence_range[0]]
-        to_append, failed = change_sequence_to_eliminate_one_occurance(
+        to_append, failed = eliminate_one_occurance(
             final_sequence[sequence_range[0] : sequence_range[1]],
             done_sequences,
-            formatted_codon_bias_table,
+            formatted_codons,
             new_sequence[sequence_range[0] - 2 : sequence_range[0]],
             final_sequence[sequence_range[1] : sequence_range[1] + 2],
         )
@@ -119,12 +120,69 @@ def get_sequence_from_occurance_places(input_gene, occurance, lenght):
     return (start, end)
 
 
-def change_sequence_to_eliminate_one_occurance(
-    input_string, done_sequences, formatted_codon_bias_table, pre="", post=""
+def eliminate_one_occurance(
+    input_string, done_sequences, formatted_codons, pre="", post=""
+):  
+    """Change given sequence to get rid of done forbidden sequences.
+
+    Funtion takes the good possibilities from 
+    create_all_good_possbilities and selects the best one
+    according to the CAI score.
+
+    Args:
+        input_string:String of starting sequence.
+        done_sequences:List of all sequences already eliminated.
+        formatted_codons: List of formatted codons.
+        pre:The part of sequence before input, which is not changed.
+        post:The part of the sequence after input, which is not changed.
+    
+    Returns:
+        Best string and 0 if it was found or
+        input string and 1 if it wasn't.
+    """
+    good_possibilities, failed = create_all_good_possibilities(
+        input_string, 
+        done_sequences, 
+        formatted_codons, 
+        pre, 
+        post
+    )
+    if failed:
+        return input_string, failed
+    best = (0, "")
+    for possibility in good_possibilities:
+        calculated = (
+            calculate_CAI(possibility, formatted_codons),
+            possibility,
+        )
+        if calculated[0] > best[0]:
+            best = calculated
+    return best[1], 0
+
+def create_all_good_possibilities(
+    input_string, done_sequences, formatted_codons, pre="", post=""
 ):
+    """Function creating possibilities to eliminate sequence.
+
+    It creates all possible products, and selects good ones
+    combinations not containing any of the forbidden ones, 
+    yet still coding the same protein.
+
+    Args:
+        input_string:String of starting sequence.
+        done_sequences:List of all sequences already eliminated.
+        formatted_codons: List of formatted codons.
+        pre:The part of sequence before input, which is not changed.
+        post:The part of the sequence after input, which is not changed.
+    
+    Returns:
+        List of good possibilities if found and 0
+        if none good possibilities were found returns 
+        input sequence and 1.
+    """
     aminoacids = rewrite_sequence_to_aminoacids(input_string)
     possible_codons_list = get_codons_based_on_aminoacid(
-        aminoacids, formatted_codon_bias_table
+        aminoacids, formatted_codons
     )
     all_possibilities = [
         rewrite_codons_to_sequence(x) for x in product(*possible_codons_list)
@@ -137,22 +195,35 @@ def change_sequence_to_eliminate_one_occurance(
             good_possibilities.append(possibility)
     if not len(good_possibilities):
         return input_string, 1
-    best = (0, "")
-    for possibility in good_possibilities:
-        calculated = (
-            calculate_CAI(possibility, formatted_codon_bias_table),
-            possibility,
-        )
-        if calculated[0] > best[0]:
-            best = calculated
-    return best[1], 0
+    return good_possibilities, 0
 
 
-def get_codons_based_on_aminoacid(aminoacids, formatted_codon_bias_table):
+
+def get_codons_based_on_aminoacid(aminoacids, formatted_codons):
+    """Returns list of codons coding aminoacids in given order.
+    
+    Function takes list of aminoacids in order and collects
+    codons coding that aminoacids, staying in order.
+
+    Example:
+        get_codons_based_on_aminoacid("MC", formatted_codon_bias)
+        gives [["AUG"]["UGC", "UGU"]], M is coded by AUG codon 
+        and C is coded by both UGC and UGU.
+
+    Arguments:
+        aminoacids:
+            List(or string) of aminoacids we want to get codons of.
+        formatted_codons: 
+            List of formatted codons.
+
+    Returns: 
+        List of two lists, each is collection of 
+        codons coding given aminoacid.
+    """
     sequence = []
     for aminoacid in aminoacids:
         list_of_coding_codons = []
-        for codon in formatted_codon_bias_table:
+        for codon in formatted_codons:
             if codon.aminoacid == aminoacid:
                 list_of_coding_codons.append(codon.bases)
         sequence.append(list_of_coding_codons)
@@ -160,6 +231,7 @@ def get_codons_based_on_aminoacid(aminoacids, formatted_codon_bias_table):
 
 
 def check_if_sequences_in_forbidden(sequence, all_forbidden_sequences):
+    """Checks if sequence is in forbidden sequences"""
     for forbidden in all_forbidden_sequences:
         if find_sequence_in_gene(forbidden, sequence) != []:
             return 1
