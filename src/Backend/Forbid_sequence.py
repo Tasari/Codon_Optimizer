@@ -18,8 +18,7 @@ def add_forbid_sequences_to_all(all_forbidden_sequences, new_forbidden):
     return all_forbidden_sequences
 
 
-def forbid_sequences(all_forbidden_sequences, input_string, formatted_codons):
-    final_sequence = input_string
+def forbid_sequences(all_forbidden_sequences, input_gene, formatted_codons):
     still_found = 0
     if all_forbidden_sequences != []:
         all_forbidden_sequences = list(
@@ -35,11 +34,11 @@ def forbid_sequences(all_forbidden_sequences, input_string, formatted_codons):
                 all_forbidden_sequences[len(all_forbidden_sequences) - 1]
             )
             done_sequences.append(sequence)
-            final_sequence, still_found = eliminate_occurances_of_sequence(
-                final_sequence, done_sequences, lenght, formatted_codons
+            input_gene, still_found = eliminate_occurances_of_sequence(
+                input_gene, done_sequences, lenght, formatted_codons
             )
     errors.append("Failed to eliminate sequeces: {}".format(failed_forbidding))
-    return final_sequence
+    return input_gene
 
 
 def get_valid_sequence_lenght(sequence):
@@ -52,60 +51,91 @@ def get_valid_sequence_lenght(sequence):
 
 
 def eliminate_occurances_of_sequence(
-    final_sequence, done_sequences, lenght, formatted_codons
+    input_gene, done_sequences, lenght, formatted_codons
 ):
     sequence = done_sequences[-1]
-    all_occurances_of_sequence = find_sequence_in_gene(sequence, final_sequence)
-    new_sequence = ""
-    new_sequence, failed, end = change_sequence_to_eliminate_multiple_occurances(
+    all_occurances_of_sequence = find_sequence_in_gene(sequence, input_gene)
+    new_gene = ""
+    new_gene, failed= change_sequence_to_eliminate_multiple_occurances(
         all_occurances_of_sequence,
-        final_sequence,
+        input_gene,
         done_sequences,
         lenght,
         formatted_codons,
     )
-    new_sequence += final_sequence[end:]
     if all_occurances_of_sequence != []:
-        final_sequence = new_sequence
-    if find_sequence_in_gene(sequence, final_sequence) != [] and not failed:
-        return final_sequence, 1
-    return final_sequence, 0
+        input_gene = new_gene
+    if find_sequence_in_gene(sequence, input_gene) != [] and not failed:
+        return input_gene, 1
+    return input_gene, 0
 
 
 def change_sequence_to_eliminate_multiple_occurances(
     all_occurances_of_sequence,
-    final_sequence,
+    input_gene,
     done_sequences,
     lenght,
     formatted_codons,
 ):
+    """Function eliminating all the occurances of sequence.
+
+    Function eliminates all occurances of the sequence by
+    eliminating them one by one, and giving one occurance
+    eliminator 2 bases before and 2 bases after the editable
+    occurance, assuring new occurances won't appear. It 
+    retunrs new sequence without forbidden sequences, if successful
+    or adds sequence to failed if it failed to remove it. 
+
+    Args:
+        all_occurances_of_sequence: List of all occurances.
+        input_gene: Gene from which we want to eliminate sequences.
+        done_sequences: List of all already eliminated sequences.
+        lenght: Lenght of eliminated sequence
+        formatted_codons: List of formatted codons.
+    """
     begin = 0
     new_sequence = ""
     failed = 0
     sequence = done_sequences[-1]
     for occurance in all_occurances_of_sequence:
         sequence_range = get_sequence_from_occurance_places(
-            final_sequence, occurance, lenght
+            input_gene, occurance, lenght
         )
         if begin > sequence_range[0]:
             begin = sequence_range[0]
             new_sequence = new_sequence[:begin]
-        new_sequence += final_sequence[begin : sequence_range[0]]
+        new_sequence += input_gene[begin : sequence_range[0]]
         to_append, failed = eliminate_one_occurance(
-            final_sequence[sequence_range[0] : sequence_range[1]],
+            input_gene[sequence_range[0] : sequence_range[1]],
             done_sequences,
             formatted_codons,
             new_sequence[sequence_range[0] - 2 : sequence_range[0]],
-            final_sequence[sequence_range[1] : sequence_range[1] + 2],
+            input_gene[sequence_range[1] : sequence_range[1] + 2],
         )
         new_sequence += to_append
         begin = sequence_range[1]
         if failed and sequence.replace("U", "T") not in failed_forbidding:
             failed_forbidding.append(sequence.replace("U", "T"))
-    return new_sequence, failed, begin
+    new_sequence += input_gene[begin:]
+    return new_sequence, failed
 
 
 def get_sequence_from_occurance_places(input_gene, occurance, lenght):
+    """Exports occurance to get whole codons containing it.
+
+    Function defines if occurance starts at new codon, and if not
+    it goes back by 1 or 2 places, assuring the occurance is whole 
+    codon, it also takes codon after since the occurance moves max
+    2 bases back.
+
+    Args:
+        input_gene: Gene from which we take the sequence.
+        occurance: Int symbolizing start of the found occurance
+        lenght: Int symbolizing the lenght of the sequence
+
+    Returns:
+        Tuple symbolizing start and end of edited occurance
+    """
     if occurance % 3 == 0:
         start = occurance
     elif occurance % 3 == 1:
