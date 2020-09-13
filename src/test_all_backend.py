@@ -77,30 +77,30 @@ def test_set_rare_codons():
 
 
 def test_formatting_codon_bias():
-    formatted_codon_bias = format_codon_bias(initial_codon_bias_table)
-    assert formatted_codon_bias[0].bases == "UUU"
-    assert formatted_codon_bias[1].frequencyper1000 == 2.2
-    assert formatted_codon_bias[2].amount == 21
+    formatted_codons = format_codon_bias(initial_codon_bias_table)
+    assert formatted_codons[0].bases == "UUU"
+    assert formatted_codons[1].frequencyper1000 == 2.2
+    assert formatted_codons[2].amount == 21
 
 
 def test_formatting_sequence_to_codon_bias():
-    formatted_codon_bias = create_formatted_codon_bias_from_sequence("ATCAUCAUC")
-    assert formatted_codon_bias[0].bases == "AUA"
-    assert formatted_codon_bias[1].amount == 3
-    assert formatted_codon_bias[2].frequencyper1000 == 0.1
+    formatted_codons = create_formatted_codon_bias_from_sequence("ATCAUCAUC")
+    assert formatted_codons[0].bases == "AUA"
+    assert formatted_codons[1].amount == 3
+    assert formatted_codons[2].frequencyper1000 == 0.1
 
 
 def test_CAI_calculation():
-    formatted_codon_bias = format_codon_bias(initial_codon_bias_table)
-    assert calculate_CAI("UUCUUCUUC", formatted_codon_bias) == 1
-    assert calculate_CAI("UUCUUCUUU", formatted_codon_bias) == 0.641
+    formatted_codons = format_codon_bias(initial_codon_bias_table)
+    assert calculate_CAI("UUCUUCUUC", formatted_codons) == 1
+    assert calculate_CAI("UUCUUCUUU", formatted_codons) == 0.641
 
 
 def test_CAI_maximalization():
-    formatted_codon_bias = format_codon_bias(initial_codon_bias_table)
+    formatted_codons = format_codon_bias(initial_codon_bias_table)
     aminoacid_sequence = "DADARAVE"
-    sequence = maximize_CAI(aminoacid_sequence, formatted_codon_bias)
-    assert calculate_CAI(sequence, formatted_codon_bias) == 1
+    sequence = maximize_CAI(aminoacid_sequence, formatted_codons)
+    assert calculate_CAI(sequence, formatted_codons) == 1
 
 
 def test_rewriting():

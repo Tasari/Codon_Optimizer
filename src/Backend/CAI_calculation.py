@@ -29,17 +29,17 @@ def calculate_CAI(data, formatted_codons):
     return round(geomean(to_count), 3)
 
 
-def reformat_table_codon_freq_aa(formatted_codon_bias):
+def reformat_table_codon_freq_aa(formatted_codons):
     """Returns dict mapping "bases":(frequency, "aminoacid").
 
     Takes data from formatted codon bias and creates dict
     "bases":(frequency, "aminoacid").
 
     Args:
-        formatted_codon_bias: List of formatted codons.
+        formatted_codons: List of formatted codons.
     """
     codon_freq = {}
-    for codon in formatted_codon_bias:
+    for codon in formatted_codons:
         codon_freq[codon.bases] = (codon.frequencyper1000, codon.aminoacid)
     return codon_freq
 

@@ -41,11 +41,11 @@ def format_codon_bias(codon_bias_table):
     return codons
 
 
-def set_rare_codons(formatted_codon_bias, minimal_frequency=0.1):
-    for codon in formatted_codon_bias:
+def set_rare_codons(formatted_codons, minimal_frequency=0.1):
+    for codon in formatted_codons:
         if codon.frequencyper1000 < minimal_frequency:
             codon.frequencyper1000 = minimal_frequency
-    return formatted_codon_bias
+    return formatted_codons
 
 
 def create_formatted_codon_bias_from_sequence(sequence):

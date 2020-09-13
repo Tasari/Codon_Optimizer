@@ -21,23 +21,23 @@ def front_optimize(
     try:
         if not codon_bias_entry.var.get():
             codon_bias_entry.check_table_valid()
-            formatted_codon_bias = format_codon_bias(codon_bias_entry.all_data())
+            formatted_codons = format_codon_bias(codon_bias_entry.all_data())
         else:
-            formatted_codon_bias = create_formatted_codon_bias_from_sequence(
+            formatted_codons = create_formatted_codon_bias_from_sequence(
                 codon_bias_entry.all_data()
             )
         input_gene_entry.check_if_text_is_gene()
         input_gene_text = rewrite_to_rna(input_gene_entry.all_data())
         checklist_board_list = create_checklist_board_list(checklist_board)
         output_gene_entry.set_data(
-            optimize(formatted_codon_bias, input_gene_text, checklist_board_list)
+            optimize(formatted_codons, input_gene_text, checklist_board_list)
         )
         output_gene_text = rewrite_to_rna(output_gene_entry.all_data())
-        input_gene_entry.set_CAI(calculate_CAI(input_gene_text, formatted_codon_bias))
-        output_gene_entry.set_CAI(calculate_CAI(output_gene_text, formatted_codon_bias))
+        input_gene_entry.set_CAI(calculate_CAI(input_gene_text, formatted_codons))
+        output_gene_entry.set_CAI(calculate_CAI(output_gene_text, formatted_codons))
         input_gene_entry.set_CGs(calculateCGs(input_gene_text))
         output_gene_entry.set_CGs(calculateCGs(output_gene_text))
-        supersequence = create_codon_bias_supersequence(formatted_codon_bias)
+        supersequence = create_codon_bias_supersequence(formatted_codons)
         codon_bias_entry.set_CGs(calculateCGs(supersequence))
     except:
         pass
@@ -70,7 +70,7 @@ def create_checklist_board_list(checklist_board):
     return checklist_board_list
 
 
-def optimize(formatted_codon_bias, input_gene_text, checklist_board_list):
+def optimize(formatted_codons, input_gene_text, checklist_board_list):
     input_gene_text = rewrite_to_rna(input_gene_text)
     try:
         try:
@@ -79,17 +79,17 @@ def optimize(formatted_codon_bias, input_gene_text, checklist_board_list):
             errors.append("Input Sequence is not dividable by 3")
             raise Exception
         try:
-            assert len(formatted_codon_bias) == 64
+            assert len(formatted_codons) == 64
         except AssertionError:
             errors.append("Not enough codons in table")
             raise Exception
         all_forbidden_sequences = []
         if checklist_board_list[0]:
             final_sequence = maximize_CAI(
-                rewrite_sequence_to_aminoacids(input_gene_text), formatted_codon_bias
+                rewrite_sequence_to_aminoacids(input_gene_text), formatted_codons
             )
         if checklist_board_list[1]:
-            final_sequence = Harmonize(final_sequence, formatted_codon_bias, 5)
+            final_sequence = Harmonize(final_sequence, formatted_codons, 5)
         if checklist_board_list[2][0]:
             all_forbidden_sequences = add_hidden_codons_to_forbidden(
                 all_forbidden_sequences, checklist_board_list[2][1]
@@ -104,11 +104,11 @@ def optimize(formatted_codon_bias, input_gene_text, checklist_board_list):
             )
         if all_forbidden_sequences != []:
             final_sequence = forbid_sequences(
-                all_forbidden_sequences, final_sequence, formatted_codon_bias
+                all_forbidden_sequences, final_sequence, formatted_codons
             )
         if checklist_board_list[5][0]:
             final_sequence = include_sequence(
-                checklist_board_list[5][1], final_sequence, formatted_codon_bias
+                checklist_board_list[5][1], final_sequence, formatted_codons
             )
     except:
         pass

@@ -7,13 +7,13 @@ from .tools import (
 import re
 
 
-def Harmonize(sequence, formatted_codon_bias, spread=5):
-    supersequence = create_codon_bias_supersequence(formatted_codon_bias)
+def Harmonize(sequence, formatted_codons, spread=5):
+    supersequence = create_codon_bias_supersequence(formatted_codons)
     target_cgcontent = calculateCGs(supersequence)
-    for codon in get_most_frequent_codons(formatted_codon_bias).values():
+    for codon in get_most_frequent_codons(formatted_codons).values():
         actual_cgcontent = calculateCGs(sequence)
         prioritized_codon = get_best_codon_with_optimal_score(
-            formatted_codon_bias, actual_cgcontent, target_cgcontent, codon.aminoacid
+            formatted_codons, actual_cgcontent, target_cgcontent, codon.aminoacid
         )
         sequence = replace_nth_codon(
             sequence, codon.bases, prioritized_codon.bases, spread
@@ -22,11 +22,11 @@ def Harmonize(sequence, formatted_codon_bias, spread=5):
 
 
 def get_best_codon_with_optimal_score(
-    formatted_codon_bias, actual_cgcontent, target_cgcontent, aminoacid
+    formatted_codons, actual_cgcontent, target_cgcontent, aminoacid
 ):
     all_aa_codons = {}
     cg1, cg2, cg3 = define_needed_cgs(actual_cgcontent, target_cgcontent)
-    for codon in formatted_codon_bias:
+    for codon in formatted_codons:
         if codon.aminoacid == aminoacid:
             try:
                 all_aa_codons[score(codon, cg1, cg2, cg3)].append(codon)

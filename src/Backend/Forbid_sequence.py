@@ -236,7 +236,7 @@ def get_codons_based_on_aminoacid(aminoacids, formatted_codons):
     codons coding that aminoacids, staying in order.
 
     Example:
-        get_codons_based_on_aminoacid("MC", formatted_codon_bias)
+        get_codons_based_on_aminoacid("MC", formatted_codons)
         gives [["AUG"]["UGC", "UGU"]], M is coded by AUG codon 
         and C is coded by both UGC and UGU.
 

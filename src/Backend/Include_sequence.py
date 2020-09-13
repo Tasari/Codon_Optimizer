@@ -8,14 +8,14 @@ from ..logs import errors
 from itertools import product
 
 
-def include_sequence(sequence, gene, formatted_codon_bias):
+def include_sequence(sequence, gene, formatted_codons):
     if sequence != [""]:
         if find_sequence_in_gene(sequence[0], gene) != []:
             errors.append("Sequence already in gene")
             return gene
         try:
             final_sequence = build_gene_with_sequence(
-                sequence, gene, formatted_codon_bias
+                sequence, gene, formatted_codons
             )
             return final_sequence
         except:
@@ -23,8 +23,8 @@ def include_sequence(sequence, gene, formatted_codon_bias):
     return gene
 
 
-def build_gene_with_sequence(sequence, gene, formatted_codon_bias):
-    best_sequence = get_best_sequence(sequence[0], gene, formatted_codon_bias)
+def build_gene_with_sequence(sequence, gene, formatted_codons):
+    best_sequence = get_best_sequence(sequence[0], gene, formatted_codons)
     occurance = (
         find_sequence_in_gene(
             rewrite_sequence_to_protein(best_sequence),
@@ -38,7 +38,7 @@ def build_gene_with_sequence(sequence, gene, formatted_codon_bias):
     return remade_sequence
 
 
-def get_best_sequence(sequence, gene, formatted_codon_bias):
+def get_best_sequence(sequence, gene, formatted_codons):
     rewritten_gene = rewrite_sequence_to_protein(gene)
     good_sequences = {}
     for potential in create_potential_sequences(sequence):
@@ -48,7 +48,7 @@ def get_best_sequence(sequence, gene, formatted_codon_bias):
             )
             != []
         ):
-            good_sequences[potential] = calculate_CAI(potential, formatted_codon_bias)
+            good_sequences[potential] = calculate_CAI(potential, formatted_codons)
     shortest_good_sequences = erase_not_shortest_sequences(good_sequences)
     for sequence in shortest_good_sequences.keys():
         if good_sequences[sequence] == max(shortest_good_sequences.values()):
