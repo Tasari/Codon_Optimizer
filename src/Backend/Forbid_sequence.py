@@ -107,11 +107,11 @@ def change_sequence_to_eliminate_multiple_occurances(
 
 def get_sequence_from_occurance_places(input_gene, occurance, lenght):
     if occurance % 3 == 0:
-        start = occurance - 3
+        start = occurance
     elif occurance % 3 == 1:
-        start = occurance - 1 - 3
+        start = occurance - 1
     else:
-        start = occurance - 2 - 3
+        start = occurance - 2
     if start < 0:
         start = 0
     end = start + lenght + 3
