@@ -42,6 +42,7 @@ def forbid_sequences(all_forbidden_sequences, input_gene, formatted_codons):
 
 
 def get_valid_sequence_lenght(sequence):
+    """Gets lenght of sequence extended to contain whole codons"""
     lenght = len(sequence)
     if lenght % 3 != 0:
         lenght += 1
@@ -53,10 +54,23 @@ def get_valid_sequence_lenght(sequence):
 def eliminate_occurances_of_sequence(
     input_gene, done_sequences, lenght, formatted_codons
 ):
+    """Takes occurances of sequence and tasks their elimination.
+
+    Args:
+        input_gene: Gene from which we want to eliminate sequences.
+        done_sequences: List of all already eliminated sequences.
+        lenght: Lenght of eliminated sequence.
+        formatted_codons: List of formatted codons.
+
+    Returns:
+        Tuple in which first element in changed gene, and second is
+        1 if all sequences were sucessfully removed or 0 if not, 
+        also returns 0 if sequence is not found in gene.
+    """
     sequence = done_sequences[-1]
     all_occurances_of_sequence = find_sequence_in_gene(sequence, input_gene)
     new_gene = ""
-    new_gene, failed= change_sequence_to_eliminate_multiple_occurances(
+    new_gene, failed = change_sequence_to_eliminate_multiple_occurances(
         all_occurances_of_sequence,
         input_gene,
         done_sequences,
