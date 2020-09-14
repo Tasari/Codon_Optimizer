@@ -19,6 +19,23 @@ def add_forbid_sequences_to_all(all_forbidden_sequences, new_forbidden):
 
 
 def forbid_sequences(all_forbidden_sequences, input_gene, formatted_codons):
+    """Function starting the elimination of forbidden sequences.
+
+    Function defines valid lenght from the longest sequence, 
+    and then passes it to the elimination process, appending
+    the eliminated sequences to done sequences, which are forbidden
+    in gene, thanks to that already done sequences do not appear again
+    by forbidding another ones. At the end shows sequences which were
+    not eliminated. If all were eliminated shows empty list.
+
+    Args:
+        all_forbidden_sequences = List of all forbidden sequences.
+        input_gene: Gene from which we eliminate sequences.
+        formatted_codons: List of formatted codons.
+    
+    Returns:
+        Edited gene without successfully deleted sequences.
+    """
     if all_forbidden_sequences != []:
         done_sequences = []
         lenght = get_valid_sequence_lenght(sorted(all_forbidden_sequences, key=len)[-1])
