@@ -238,15 +238,23 @@ def test_forbidding_sequence():
     assert forbidden_protein == rewrite_sequence_to_protein(new_sequence)
 
 
+
 def test_eliminating_occurances():
     assert (
         eliminate_occurances_of_sequence(
             "AAGAAGAAGAAG",
-            ["AAA", "AAG"],
+            ["AAG"],
             3,
             format_codon_bias(initial_codon_bias_table),
-        )[1]
-        == 0
+        ) == "AAAAAAAAAAAA"
+    )
+    assert (
+        eliminate_occurances_of_sequence(
+            "AAGAAGAAGAAG",
+            ["AAG", "AAA"],
+            3,
+            format_codon_bias(initial_codon_bias_table),
+        ) == "AAGAAGAAGAAG"
     )
 
 

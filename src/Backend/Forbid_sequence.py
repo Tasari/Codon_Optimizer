@@ -19,25 +19,15 @@ def add_forbid_sequences_to_all(all_forbidden_sequences, new_forbidden):
 
 
 def forbid_sequences(all_forbidden_sequences, input_gene, formatted_codons):
-    still_found = 0
     if all_forbidden_sequences != []:
-        all_forbidden_sequences = list(
-            dict.fromkeys(sorted(all_forbidden_sequences, key=len))
-        )
-        still_found = 1
-        for number, sequence in enumerate(all_forbidden_sequences):
-            all_forbidden_sequences[number] = rewrite_to_rna(sequence)
-    while still_found:
         done_sequences = []
+        lenght = get_valid_sequence_lenght(sorted(all_forbidden_sequences, key=len)[-1])
         for sequence in all_forbidden_sequences:
-            lenght = get_valid_sequence_lenght(
-                all_forbidden_sequences[len(all_forbidden_sequences) - 1]
-            )
             done_sequences.append(sequence)
-            input_gene, still_found = eliminate_occurances_of_sequence(
+            input_gene = eliminate_occurances_of_sequence(
                 input_gene, done_sequences, lenght, formatted_codons
-            )
-    errors.append("Failed to eliminate sequeces: {}".format(failed_forbidding))
+            )   
+        errors.append("Failed to eliminate sequeces: {}".format(failed_forbidding))
     return input_gene
 
 
@@ -70,7 +60,7 @@ def eliminate_occurances_of_sequence(
     sequence = done_sequences[-1]
     all_occurances_of_sequence = find_sequence_in_gene(sequence, input_gene)
     new_gene = ""
-    new_gene, failed = change_sequence_to_eliminate_multiple_occurances(
+    new_gene = change_sequence_to_eliminate_multiple_occurances(
         all_occurances_of_sequence,
         input_gene,
         done_sequences,
@@ -79,9 +69,7 @@ def eliminate_occurances_of_sequence(
     )
     if all_occurances_of_sequence != []:
         input_gene = new_gene
-    if find_sequence_in_gene(sequence, input_gene) != [] and not failed:
-        return input_gene, 1
-    return input_gene, 0
+    return input_gene
 
 
 def change_sequence_to_eliminate_multiple_occurances(
@@ -109,7 +97,6 @@ def change_sequence_to_eliminate_multiple_occurances(
     """
     begin = 0
     new_sequence = ""
-    failed = 0
     sequence = done_sequences[-1]
     for occurance in all_occurances_of_sequence:
         sequence_range = get_sequence_from_occurance_places(
@@ -131,7 +118,7 @@ def change_sequence_to_eliminate_multiple_occurances(
         if failed and sequence.replace("U", "T") not in failed_forbidding:
             failed_forbidding.append(sequence.replace("U", "T"))
     new_sequence += input_gene[begin:]
-    return new_sequence, failed
+    return new_sequence
 
 
 def get_sequence_from_occurance_places(input_gene, occurance, lenght):

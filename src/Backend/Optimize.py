@@ -90,6 +90,10 @@ def optimize(formatted_codons, input_gene_text, checklist_board_list):
             )
         if checklist_board_list[1]:
             final_sequence = Harmonize(final_sequence, formatted_codons, 5)
+        if checklist_board_list[4][0]:
+            all_forbidden_sequences = add_forbid_sequences_to_all(
+                all_forbidden_sequences, checklist_board_list[4][1]
+            )
         if checklist_board_list[2][0]:
             all_forbidden_sequences = add_hidden_codons_to_forbidden(
                 all_forbidden_sequences, checklist_board_list[2][1]
@@ -97,10 +101,6 @@ def optimize(formatted_codons, input_gene_text, checklist_board_list):
         if checklist_board_list[3]:
             all_forbidden_sequences = add_repetitive_bases_to_forbidden(
                 all_forbidden_sequences
-            )
-        if checklist_board_list[4][0]:
-            all_forbidden_sequences = add_forbid_sequences_to_all(
-                all_forbidden_sequences, checklist_board_list[4][1]
             )
         if all_forbidden_sequences != []:
             final_sequence = forbid_sequences(
