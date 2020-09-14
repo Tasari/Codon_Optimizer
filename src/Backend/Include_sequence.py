@@ -9,6 +9,23 @@ from itertools import product
 
 
 def include_sequence(sequence, gene, formatted_codons):
+    """Includes sequence into gene keeping the protein sequence.
+
+    If sequence not in gene it tries to find good place for
+    sequence and put it into the gene.
+
+    Args:
+        sequence: 
+            List of sequences to be inclueded for now only
+            accepts list with one sequence.
+        gene:
+            Gene string in which we want to have the sequence.
+        formatted_codons: List of Codon objects.
+        
+    Returns:
+        Gene with included sequence if successfull,
+        and input gene if including failed.
+    """
     if sequence != [""]:
         if find_sequence_in_gene(sequence[0], gene) != []:
             errors.append("Sequence already in gene")
@@ -24,6 +41,20 @@ def include_sequence(sequence, gene, formatted_codons):
 
 
 def build_gene_with_sequence(sequence, gene, formatted_codons):
+    """Tries to rebuild gene to contain the sequence.
+
+    Creates sequence which fits in the gene, and puts it
+    into the gene keeping the protein.
+
+    Args:
+        sequence: Secuence we want to be included.
+        gene: Gene to be edited.
+        formatted_codons: List of Codon objects.
+
+    Returns:
+        Sequence with included sequence if succesfull
+        or raises exception catched in higher level.
+    """
     best_sequence = get_best_sequence(sequence[0], gene, formatted_codons)
     occurance = (
         find_sequence_in_gene(
@@ -39,6 +70,21 @@ def build_gene_with_sequence(sequence, gene, formatted_codons):
 
 
 def get_best_sequence(sequence, gene, formatted_codons):
+    """Returns the best potential sequence based on CAI and lenght.
+    
+    Rewrites all the potential sequences to protein and if combination
+    is found in the rewritten gene it accepts it as good sequence,
+    calculating its CAI and removing all those which were not shortest 
+    possible, then returning the one with highest CAI score.
+
+    Args:
+        sequence: Secuence we want to be included.
+        gene: Gene to be edited.
+        formatted_codons: List of Codon objects.
+    
+    Returns:
+        Fitting sequence with highest CAI.
+    """
     rewritten_gene = rewrite_sequence_to_protein(gene)
     good_sequences = {}
     for potential in create_potential_sequences(sequence):
@@ -56,6 +102,18 @@ def get_best_sequence(sequence, gene, formatted_codons):
 
 
 def create_potential_sequences(sequence):
+    """Creates potential sequences containing target sequence.
+    
+    Creates sequences with target sequence in all possible places
+    creating multiple different protein combinations containing
+    the target sequence.
+
+    Args:
+        sequence: Sequence on which we want to create potential ones.
+
+    Returns:
+        List of all potential sequences.
+    """
     all_sequences = []
     all_bases = ["A", "C", "G", "U"]
     all_possibilities = []
@@ -75,6 +133,16 @@ def create_potential_sequences(sequence):
 
 
 def prepare_sequences(sequence):
+    """Creates possibilities of sequence to be dividable by codons.
+    
+    Takes the sequence which len is not dividable by 3 and creates
+    all the possibility sequences containing the target yet being
+    able to be dividable by 3.
+
+    Returns:
+        List of sequences containing the target sequence
+        and dividable by 3.
+    """
     all_sequences = []
     all_bases = ["A", "C", "G", "U"]
     if len(sequence) % 3 == 1:
@@ -93,6 +161,7 @@ def prepare_sequences(sequence):
 
 
 def erase_not_shortest_sequences(good_sequences):
+    """Returns all sequences which are the shortest"""
     optimal_lenght = 2147483646
     good_keys = list(good_sequences.keys())
     for sequence in good_keys:
