@@ -5,6 +5,12 @@ from src.Frontend.Gene_text import Gene_text
 from src.Frontend.Logs_window import Log_text
 from src.Backend.Optimize import front_optimize
 
+"""Creation of the main window of the program.
+
+Main file creating main_window, adding all the 
+widgets to it and starting the Tkinter mainloop.
+"""
+
 main_window = tk.Tk()
 
 main_window.iconbitmap("icon.ico")

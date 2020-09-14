@@ -3,6 +3,11 @@ from src.logs import errors
 
 
 class Gene_text(Frame):
+    """Frame containing data about input and output genes.
+
+    Frame holding data of both input gene and output gene,
+    and CAI + CG data of those sequences.
+    """
     def __init__(self, master, label=0):
         super().__init__(master)
         if label:
@@ -22,16 +27,20 @@ class Gene_text(Frame):
         self.CGs.grid(row=0, column=1)
 
     def all_data(self):
+        """Method taking all the data from the text window."""
         return self.text.get("1.0", END).replace("\n", "").upper()
 
     def set_data(self, sequence):
+        """Method setting the data in the text window."""
         self.text.delete("1.0", END)
         self.text.insert(INSERT, sequence)
 
     def set_CAI(self, CAI):
+        """Method setting the CAI under the text window."""
         self.CAI.config(text="CAI = {}".format(CAI))
 
     def set_CGs(self, CGstable):
+        """Method setting the CG content under the text window."""
         self.CGs.config(
             text="CG% = {:02.2f}% CG1 = {:02.2f}% CG2 = {:02.2f}% CG3 = {:02.2f}%".format(
                 CGstable[0], CGstable[1], CGstable[2], CGstable[3]
@@ -39,6 +48,7 @@ class Gene_text(Frame):
         )
 
     def check_if_text_is_gene(self):
+        """Method checking if text is all bases only."""
         for char in self.all_data():
             if char not in ["A", "T", "U", "C", "G"]:
                 errors.append("Found invalid base in input: {}".format(char))
