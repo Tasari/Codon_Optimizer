@@ -2,7 +2,22 @@ from tkinter import Checkbutton, IntVar, Frame, Entry, Label, END
 
 
 class checklist_board(Frame):
+    """Frame containing multiple checkbuttons symbolizing options.
+
+    Class contains all the options which can be used in optimize
+    and checkbuttons telling if option should be used.
+
+    Attributes:
+        Checks: Checkboxes telling if box is checked.
+        Entries: Entries containing data used in checked options. 
+        Checkbuttons: Actual Checkbuttons
+    """
     def __init__(self, master):
+        """Inits the class connecting it to main window.
+        
+        Creates all of checks, checkbuttons and entries, 
+        putting them into their places.
+        """
         super().__init__(master)
         self.label = Label(self, text="Options", font=("Arial", 16))
         self.label.grid(row=0, column=0)
@@ -85,16 +100,20 @@ class checklist_board(Frame):
         self.checklist_board.grid(row=1, column=0)
 
     def block_entry(self, entry, var):
+        """Defines if entry should be blocket based on check"""
         if var.get() == 0:
             entry.configure(state="disabled")
         else:
             entry.configure(state="normal")
 
     def get_forbidden(self):
+        """Takes data from forbidden entry"""
         return self.Forbid_sequence_entry.get().replace("T", "U").split(", ")
 
     def get_favored(self):
+        """Takes the data from include entry"""
         return self.Include_sequence_entry.get().replace("T", "U").split(", ")
 
     def get_hidden(self):
+        """Takes the data form hidden entry"""
         return self.Hidden_codons_entry.get().replace("T", "U").split(", ")
