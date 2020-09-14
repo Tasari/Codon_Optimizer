@@ -18,6 +18,25 @@ from ..logs import errors, failed_forbidding
 def front_optimize(
     codon_bias_entry, input_gene_entry, output_gene_entry, checklist_board, logs
 ):
+    """Takes care of all the data taken from and going to the user.
+
+    Takes the data from the user along with all the options
+    user chose, sends it to main optimalization function, 
+    which creates output gene,then puts it into window of output 
+    gene and sets CAIs and CGs of all windows. Also shows errors.
+
+    Args:
+        codon_bias_entry: 
+            Tkinter Entry object containing codon bias.
+        input_gene_entry: 
+            Tkinter Entry object containing input gene.
+        output_gene_entry: 
+            Tkinter Entry object which will contain output gene.
+        checklist_boars: 
+            Tkinter object containing options chose by user.
+        logs:
+            Tkinter object containing logs.
+    """
     try:
         if not codon_bias_entry.var.get():
             codon_bias_entry.check_table_valid()
@@ -48,6 +67,11 @@ def front_optimize(
 
 
 def create_checklist_board_list(checklist_board):
+    """Takes the tkinter checklist board and rewrites it to list.
+
+    Fills the list with data from checklist board entry, taking
+    the checked options and data from them, to further use in optimize.    
+    """
     checklist_board_list = []
     checklist_board_list.append(checklist_board.CAI_maximize_check.get())
     checklist_board_list.append(checklist_board.Harmonization_check.get())
@@ -71,6 +95,17 @@ def create_checklist_board_list(checklist_board):
 
 
 def optimize(formatted_codons, input_gene_text, checklist_board_list):
+    """Takes the input gene and returns optimized sequence.
+
+    Takes the text, data from checklist and list of codons.
+    Then puts it trough all the optimization options chosen,
+    in checklist board and returning edited gene.
+
+    Args:
+        formatted_codons: List of Codon objects.
+        input_gene_text: Text of gene to be edited.
+        checklist_board_list: List of all chosen options with data.
+    """
     input_gene_text = rewrite_to_rna(input_gene_text)
     try:
         try:
