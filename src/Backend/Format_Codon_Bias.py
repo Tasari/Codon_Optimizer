@@ -5,8 +5,28 @@ from ..logs import errors
 
 
 def format_codon_bias(codon_bias_table):
+    """Creates list of codons based on codon bias table.
+
+    Takes codon bias table, e.g. 
+    https://www.kazusa.or.jp/codon/cgi-bin/showcodon.cgi?species=106592
+    and recreates the data creating list of 
+    Codon objects used in the program, setting minimal frequency 
+    to avoid crashes caused by frequency == 0.
+
+    Args:
+        codon_bias_table: 
+            String containing data about codons formatted in the table.
+
+    Returns:
+        List of Codon objects
+    """
     codons = []
-    actual_codon = {"bases": "", "frequencyper1000": "", "amount": "", "mode": "freq"}
+    actual_codon = {
+        "bases": "", 
+        "frequencyper1000": "", 
+        "amount": "", 
+        "mode": "freq"
+        }
     for char in codon_bias_table:
         if char in ["A", "C", "G", "U"]:
             actual_codon["bases"] += char
@@ -42,6 +62,7 @@ def format_codon_bias(codon_bias_table):
 
 
 def set_rare_codons(formatted_codons, minimal_frequency=0.1):
+    """Sets minimal frequency for each codon object"""
     for codon in formatted_codons:
         if codon.frequencyper1000 < minimal_frequency:
             codon.frequencyper1000 = minimal_frequency
@@ -49,6 +70,19 @@ def set_rare_codons(formatted_codons, minimal_frequency=0.1):
 
 
 def create_formatted_codon_bias_from_sequence(sequence):
+    """Creates list of codons based on sequences given.
+    
+    Takes the sequence, and creates list of Codon objects
+    based on codons frequency in the sequence, sets minimal frequency
+    to avoid crashes caused by frequency == 0.
+
+    Args:
+        sequence: 
+            Sequence which codons will be 
+            counted and used in Codon objects.
+    Returns:
+        List of Codon objects
+    """
     codons = []
     sequence = change_sequence_to_use_only_bases_letters(sequence)
     codon_counts = count_codons(sequence)
@@ -59,12 +93,20 @@ def create_formatted_codon_bias_from_sequence(sequence):
             ),
             1,
         )
-        codons.append(Codon(key, codon_frequency, value, codon_to_aminoacid[key]))
+        codons.append(
+            Codon(
+                key, 
+                codon_frequency, 
+                value, 
+                codon_to_aminoacid[key]
+            )
+        )
     codons = set_rare_codons(codons)
     return codons
 
 
 def change_sequence_to_use_only_bases_letters(sequence):
+    """Eliminates letters which can't be bases in sequence"""
     whitelist = ["A", "C", "G", "U"]
     whitelisted_sequence = "".join(
         [char for char in rewrite_to_rna(sequence) if char in whitelist]
@@ -78,6 +120,7 @@ def change_sequence_to_use_only_bases_letters(sequence):
 
 
 def count_codons(sequence):
+    """Counts all the codons and sets unused codons to 0"""
     codon_counts = {}
     for key in codon_to_aminoacid.keys():
         codon_counts[key] = 0
