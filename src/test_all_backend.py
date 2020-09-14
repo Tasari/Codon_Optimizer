@@ -8,7 +8,17 @@ from src.Backend.Format_Codon_Bias import (
 from src.Backend.Codon import Codon
 from src.Backend.CAI_calculation import calculate_CAI
 from src.Backend.Maximize_CAI import maximize_CAI
-from src.Backend.tools import *
+from src.Backend.tools import (
+    rewrite_sequence_to_protein, 
+    rewrite_sequence_to_codons,
+    rewrite_sequence_to_aminoacids,
+    rewrite_codons_to_sequence,
+    rewrite_codons_to_protein,
+    rewrite_codons_to_aminoacids,
+    get_most_frequent_codons,
+    find_sequence_in_gene,
+    create_codon_bias_supersequence
+)
 from src.Backend.Include_sequence import include_sequence
 from src.Backend.Calculate_CG import calculateCGs
 from src.Backend.Harmonize import (
@@ -180,10 +190,9 @@ def test_get_best_codon_with_optimal_score():
         get_best_codon_with_optimal_score(
             format_codon_bias(initial_codon_bias_table),
             [48.2, 14.5, 13.2, 33.3],
-            [42.2, 12.5, 10.1, 21.5],
             "I",
         ).bases
-        == "AUU"
+        == "AUC"
     )
 
 
